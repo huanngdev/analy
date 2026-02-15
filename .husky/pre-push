@@ -1,2 +1,0 @@
-bun run check-types
-bun run lint
