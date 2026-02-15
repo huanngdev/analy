@@ -18,9 +18,11 @@
       },
       "devDependencies": {
         "@repo/eslint-config": "workspace:*",
+        "@repo/prettier-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
         "bun-types": "latest",
         "eslint": "^10.0.0",
+        "prettier": "^3.7.4",
       },
     },
     "apps/web": {
@@ -32,6 +34,7 @@
       },
       "devDependencies": {
         "@repo/eslint-config": "workspace:*",
+        "@repo/prettier-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
         "@types/node": "^24.10.1",
         "@types/react": "^19.2.7",
@@ -41,6 +44,8 @@
         "eslint": "^10.0.0",
         "eslint-plugin-react-hooks": "^7.0.1",
         "eslint-plugin-react-refresh": "^0.4.24",
+        "prettier": "^3.7.4",
+        "prettier-plugin-tailwindcss": "^0.6.10",
         "typescript": "~5.9.3",
         "vite": "^8.0.0-beta.13",
       },
@@ -58,6 +63,16 @@
       },
       "peerDependencies": {
         "eslint": "^10.0.0",
+      },
+    },
+    "packages/prettier-config": {
+      "name": "@repo/prettier-config",
+      "version": "0.0.0",
+      "dependencies": {
+        "prettier-plugin-tailwindcss": "^0.6.10",
+      },
+      "peerDependencies": {
+        "prettier": "^3.0.0",
       },
     },
     "packages/typescript-config": {
@@ -159,6 +174,8 @@
     "@repo/api": ["@repo/api@workspace:apps/api"],
 
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
+
+    "@repo/prettier-config": ["@repo/prettier-config@workspace:packages/prettier-config"],
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
@@ -457,6 +474,8 @@
     "prelude-ls": ["prelude-ls@1.2.1", "", {}, "sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g=="],
 
     "prettier": ["prettier@3.8.1", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg=="],
+
+    "prettier-plugin-tailwindcss": ["prettier-plugin-tailwindcss@0.6.14", "", { "peerDependencies": { "@ianvs/prettier-plugin-sort-imports": "*", "@prettier/plugin-hermes": "*", "@prettier/plugin-oxc": "*", "@prettier/plugin-pug": "*", "@shopify/prettier-plugin-liquid": "*", "@trivago/prettier-plugin-sort-imports": "*", "@zackad/prettier-plugin-twig": "*", "prettier": "^3.0", "prettier-plugin-astro": "*", "prettier-plugin-css-order": "*", "prettier-plugin-import-sort": "*", "prettier-plugin-jsdoc": "*", "prettier-plugin-marko": "*", "prettier-plugin-multiline-arrays": "*", "prettier-plugin-organize-attributes": "*", "prettier-plugin-organize-imports": "*", "prettier-plugin-sort-imports": "*", "prettier-plugin-style-order": "*", "prettier-plugin-svelte": "*" }, "optionalPeers": ["@ianvs/prettier-plugin-sort-imports", "@prettier/plugin-hermes", "@prettier/plugin-oxc", "@prettier/plugin-pug", "@shopify/prettier-plugin-liquid", "@trivago/prettier-plugin-sort-imports", "@zackad/prettier-plugin-twig", "prettier-plugin-astro", "prettier-plugin-css-order", "prettier-plugin-import-sort", "prettier-plugin-jsdoc", "prettier-plugin-marko", "prettier-plugin-multiline-arrays", "prettier-plugin-organize-attributes", "prettier-plugin-organize-imports", "prettier-plugin-sort-imports", "prettier-plugin-style-order", "prettier-plugin-svelte"] }, "sha512-pi2e/+ZygeIqntN+vC573BcW5Cve8zUB0SSAGxqpB4f96boZF4M3phPVoOFCeypwkpRYdi7+jQ5YJJUwrkGUAg=="],
 
     "punycode": ["punycode@2.3.1", "", {}, "sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg=="],
 

@@ -6,16 +6,19 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
     "lint": "eslint .",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "elysia": "latest"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "bun-types": "latest",
-    "eslint": "^10.0.0"
+    "eslint": "^10.0.0",
+    "prettier": "^3.7.4"
   },
   "module": "src/index.js"
 }
