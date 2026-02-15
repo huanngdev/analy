@@ -18,6 +18,7 @@
       },
       "devDependencies": {
         "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
         "bun-types": "latest",
         "eslint": "^10.0.0",
       },
@@ -31,6 +32,7 @@
       },
       "devDependencies": {
         "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
         "@types/node": "^24.10.1",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
@@ -57,6 +59,10 @@
       "peerDependencies": {
         "eslint": "^10.0.0",
       },
+    },
+    "packages/typescript-config": {
+      "name": "@repo/typescript-config",
+      "version": "0.0.0",
     },
   },
   "packages": {
@@ -153,6 +159,8 @@
     "@repo/api": ["@repo/api@workspace:apps/api"],
 
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
+
+    "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
     "@repo/web": ["@repo/web@workspace:apps/web"],
 
