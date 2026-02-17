@@ -5,6 +5,7 @@ import { customLogger } from "./config/pino";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import { cors } from "hono/cors";
+import { rateLimiter } from "hono-rate-limiter";
 import routes from "./routes";
 
 const app = new Hono();
@@ -20,6 +21,13 @@ app.use(
     credentials: true,
     exposeHeaders: ["Content-Type", "Authorization"],
     maxAge: 600,
+  }),
+);
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000,
+    limit: 100,
+    keyGenerator: (c) => c.req.header("x-forwarded-for") ?? "",
   }),
 );
 
