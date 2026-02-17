@@ -8,9 +8,11 @@
   },
   "dependencies": {
     "@repo/shared": "workspace:*",
+    "argon2": "^0.44.0",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.11.9",
     "hono-rate-limiter": "^0.5.3",
+    "ioredis": "^5.9.3",
     "postgres": "^3.4.8"
   },
   "devDependencies": {
