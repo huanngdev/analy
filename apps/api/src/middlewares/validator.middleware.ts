@@ -3,7 +3,10 @@ import { z } from 'zod'
 import type { ValidationTargets } from 'hono'
 import type { ErrorResponse } from '@repo/shared'
 
-export const validate = <T extends z.ZodSchema, Target extends keyof ValidationTargets>(
+export const validate = <
+  T extends z.ZodSchema,
+  Target extends keyof ValidationTargets,
+>(
   target: Target,
   schema: T,
 ) => {

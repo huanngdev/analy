@@ -8,6 +8,9 @@ const envSchema = z.object({
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z.coerce.number().default(6379),
   REDIS_PASSWORD: z.string(),
+  JWT_SECRET: z.string(),
+  JWT_EXPIRES_IN: z.string(),
+  REFRESH_TOKEN_EXPIRES_IN: z.string(),
 })
 
 const env = envSchema.parse(process.env)

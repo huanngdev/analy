@@ -14,9 +14,15 @@ export const errorHandler = (err: Error, c: Context) => {
   }
 
   if (err instanceof HTTPException) {
-    return c.json<ErrorResponse>({ success: false, message: err.message }, err.status)
+    return c.json<ErrorResponse>(
+      { success: false, message: err.message },
+      err.status,
+    )
   }
 
   logger.error(err)
-  return c.json<ErrorResponse>({ success: false, message: 'Internal server error' }, 500)
+  return c.json<ErrorResponse>(
+    { success: false, message: 'Internal server error' },
+    500,
+  )
 }

@@ -1,10 +1,21 @@
-import { slugify, type SignUpResponse, type SignUpSchema } from '@repo/shared'
+import {
+  slugify,
+  type SignUpResponse,
+  type SignUpSchema,
+  type SignInSchema,
+  type SignInResponse,
+  type SignOutResponse,
+  type RotateAccessTokenResponse,
+} from '@repo/shared'
 import type { Context } from 'hono'
 import { logger } from '../config/pino'
-import { ConflictError, InternalServerError } from '../errors'
+import { BadRequestError, ConflictError, InternalServerError } from '../errors'
 import { userService } from '../services/user.service'
 import { getAvatarUrl } from '../utils/avatar.util'
 import { getEmailPrefix } from '../utils/email.util'
+import { password as passwordUtil } from '../utils/password.util'
+import { jwtService } from '../services/jwt.service'
+import { cookieUtil } from '../utils/cookie.util'
 
 export const authController = {
   signUp: async (c: Context) => {
@@ -29,10 +40,81 @@ export const authController = {
       throw new InternalServerError('Failed to create user')
     }
 
-    return c.json<SignUpResponse>({ success: true, data: user }, 201)
+    const [accessToken, refreshToken] = await Promise.all([
+      jwtService.generateAccessToken({
+        id: user.id,
+        role: user.role,
+      }),
+      jwtService.generateAndSaveRefreshToken(user.id),
+    ])
+    await cookieUtil.setRefreshTokenCookie(c, refreshToken)
+    return c.json<SignUpResponse>(
+      {
+        success: true,
+        data: {
+          accessToken,
+          user,
+        },
+      },
+      201,
+    )
   },
-  // signIn: async (c: Context) => {},
-  // signOut: async (c: Context) => {},
+  signIn: async (c: Context) => {
+    const { email, password } = c.req.valid('json' as never) as unknown as SignInSchema
+
+    const user = await userService.getUserByEmail(email)
+
+    if (!user) {
+      throw new BadRequestError('Invalid credentials')
+    }
+
+    const isPasswordValid = await passwordUtil.verify(password, user.password)
+
+    if (!isPasswordValid) {
+      throw new BadRequestError('Invalid credentials')
+    }
+
+    const [accessToken, refreshToken] = await Promise.all([
+      jwtService.generateAccessToken({
+        id: user.id,
+        role: user.role,
+      }),
+      jwtService.generateAndSaveRefreshToken(user.id),
+    ])
+    await cookieUtil.setRefreshTokenCookie(c, refreshToken)
+
+    return c.json<SignInResponse>(
+      {
+        success: true,
+        data: {
+          accessToken,
+          user: userService.removePassword(user),
+        },
+      },
+      200,
+    )
+  },
+  signOut: async (c: Context) => {
+    const refreshToken = await cookieUtil.getRefreshTokenCookie(c)
+    if (!refreshToken) {
+      throw new BadRequestError('Refresh token is required')
+    }
+    await jwtService.deleteSavedRefreshToken(refreshToken)
+    await cookieUtil.deleteRefreshTokenCookie(c)
+    return c.json<SignOutResponse>(
+      { success: true, data: { message: 'Signed out successfully' } },
+      200,
+    )
+  },
   // me: async (c: Context) => {},
-  // rotateRefreshToken: async (c: Context) => {},
+  rotateRefreshToken: async (c: Context) => {
+    const refreshToken = await cookieUtil.getRefreshTokenCookie(c)
+    if (!refreshToken) {
+      throw new BadRequestError('Refresh token is required')
+    }
+    const { accessToken, refreshToken: newRefreshToken } =
+      await jwtService.verifyAndRotateAccessToken(refreshToken)
+    await cookieUtil.setRefreshTokenCookie(c, newRefreshToken)
+    return c.json<RotateAccessTokenResponse>({ success: true, data: { accessToken } }, 200)
+  },
 }

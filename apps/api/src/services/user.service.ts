@@ -1,9 +1,22 @@
-import { usersTable, type InsertUser, type SelectUser } from '@repo/shared'
-import { eq } from 'drizzle-orm'
+import {
+  usersTable,
+  type InsertUser,
+  type SelectUser,
+  type SelectUserWithPassword,
+} from '@repo/shared'
+import { and, eq } from 'drizzle-orm'
 import { db } from '../infrastructure/db'
 import { password } from '../utils/password.util'
 
 export const userService = {
+  checkUserActive: async (id: string): Promise<boolean> => {
+    const user = await db
+      .select({ id: usersTable.id })
+      .from(usersTable)
+      .where(and(eq(usersTable.id, id), eq(usersTable.isActive, true)))
+      .then(([user]) => user)
+    return user !== undefined
+  },
   removePassword: (user: SelectUser): SelectUser => {
     const userWithoutPassword = { ...user }
     delete (userWithoutPassword as Record<string, unknown>).password
@@ -31,19 +44,19 @@ export const userService = {
 
     return userService.removePassword(newUser)
   },
-  getUserByEmail: async (email: string): Promise<SelectUser | undefined> => {
+  getUserByEmail: async (email: string): Promise<SelectUserWithPassword | undefined> => {
     const user = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.email, email))
+      .where(and(eq(usersTable.email, email), eq(usersTable.isActive, true)))
       .then(([user]) => user)
     return user ?? undefined
   },
-  getUserById: async (id: string): Promise<SelectUser | undefined> => {
+  getUserById: async (id: string): Promise<SelectUserWithPassword | undefined> => {
     const user = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.id, id))
+      .where(and(eq(usersTable.id, id), eq(usersTable.isActive, true)))
       .then(([user]) => user)
     return user ?? undefined
   },
@@ -51,17 +64,17 @@ export const userService = {
     const updatedUser = await db
       .update(usersTable)
       .set(user)
-      .where(eq(usersTable.id, id))
+      .where(and(eq(usersTable.id, id), eq(usersTable.isActive, true)))
       .returning()
       .then(([user]) => user)
     return updatedUser ?? undefined
   },
   deleteUser: async (id: string): Promise<boolean> => {
-    const result = await db
-      .delete(usersTable)
-      .where(eq(usersTable.id, id))
+    return await db
+      .update(usersTable)
+      .set({ isActive: false })
+      .where(and(eq(usersTable.id, id), eq(usersTable.isActive, true)))
       .returning()
-      .then(([user]) => user)
-    return result !== undefined
+      .then(([user]) => user !== undefined)
   },
 }
