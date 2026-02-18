@@ -1,16 +1,18 @@
 {
   "extends": "@repo/tsconfig/react.json",
-  "include": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "react-router.config.ts",
-    "routes.ts"
-  ],
-  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }
-  }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
 }

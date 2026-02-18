@@ -92,10 +92,12 @@ import {
   FileTextIcon,
   LogOutIcon,
 } from "lucide-react";
+import { Header } from "@/components/shared/header";
 
 export function ComponentExample() {
   return (
     <ExampleWrapper>
+      <Header />
       <CardExample />
       <FormExample />
     </ExampleWrapper>
