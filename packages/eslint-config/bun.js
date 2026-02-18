@@ -6,7 +6,7 @@ import prettierRecommended from "eslint-plugin-prettier/recommended";
 import tseslint from "typescript-eslint";
 
 export const bun = defineConfig([
-  globalIgnores(["**/migrations/meta/**"]),
+  globalIgnores(["**/migrations/meta/**", "**/__tests__/**"]),
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     extends: [js.configs.recommended, tseslint.configs.recommended],

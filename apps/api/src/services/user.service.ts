@@ -44,7 +44,9 @@ export const userService = {
 
     return userService.removePassword(newUser)
   },
-  getUserByEmail: async (email: string): Promise<SelectUserWithPassword | undefined> => {
+  getUserByEmail: async (
+    email: string,
+  ): Promise<SelectUserWithPassword | undefined> => {
     const user = await db
       .select()
       .from(usersTable)
@@ -52,7 +54,9 @@ export const userService = {
       .then(([user]) => user)
     return user ?? undefined
   },
-  getUserById: async (id: string): Promise<SelectUserWithPassword | undefined> => {
+  getUserById: async (
+    id: string,
+  ): Promise<SelectUserWithPassword | undefined> => {
     const user = await db
       .select()
       .from(usersTable)
@@ -60,7 +64,10 @@ export const userService = {
       .then(([user]) => user)
     return user ?? undefined
   },
-  updateUser: async (id: string, user: Partial<InsertUser>): Promise<SelectUser | undefined> => {
+  updateUser: async (
+    id: string,
+    user: Partial<InsertUser>,
+  ): Promise<SelectUser | undefined> => {
     const updatedUser = await db
       .update(usersTable)
       .set(user)

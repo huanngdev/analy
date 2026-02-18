@@ -66,6 +66,7 @@ export const jwtService = {
     const newAccessToken = await jwtService.generateAccessToken({
       id: userId,
       role: user.role,
+      isActive: user.isActive,
     })
 
     const newRefreshToken = await jwtService.generateRefreshToken()

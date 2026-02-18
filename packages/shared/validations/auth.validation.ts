@@ -5,7 +5,9 @@ export const signUpSchema = z
     email: z.email('Invalid email'),
     name: z.string().min(1, 'Name is required'),
     password: z.string().min(8, 'Password must be at least 8 characters long'),
-    confirmPassword: z.string().min(8, 'Confirm password must be at least 8 characters long'),
+    confirmPassword: z
+      .string()
+      .min(8, 'Confirm password must be at least 8 characters long'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],

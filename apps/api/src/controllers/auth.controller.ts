@@ -11,7 +11,12 @@ import {
 } from '@repo/shared'
 import type { Context } from 'hono'
 import { logger } from '../config/pino'
-import { BadRequestError, ConflictError, InternalServerError, UnauthorizedError } from '../errors'
+import {
+  BadRequestError,
+  ConflictError,
+  InternalServerError,
+  UnauthorizedError,
+} from '../errors'
 import { userService } from '../services/user.service'
 import { getAvatarUrl } from '../utils/avatar.util'
 import { getEmailPrefix } from '../utils/email.util'
@@ -21,7 +26,9 @@ import { cookieUtil } from '../utils/cookie.util'
 
 export const authController = {
   signUp: async (c: Context) => {
-    const { email, name, password } = c.req.valid('json' as never) as unknown as SignUpSchema
+    const { email, name, password } = c.req.valid(
+      'json' as never,
+    ) as unknown as SignUpSchema
 
     const isEmailExists = await userService.checkEmailExists(email)
 
@@ -46,6 +53,7 @@ export const authController = {
       jwtService.generateAccessToken({
         id: user.id,
         role: user.role,
+        isActive: user.isActive,
       }),
       jwtService.generateAndSaveRefreshToken(user.id),
     ])
@@ -62,7 +70,9 @@ export const authController = {
     )
   },
   signIn: async (c: Context) => {
-    const { email, password } = c.req.valid('json' as never) as unknown as SignInSchema
+    const { email, password } = c.req.valid(
+      'json' as never,
+    ) as unknown as SignInSchema
 
     const user = await userService.getUserByEmail(email)
 
@@ -80,6 +90,7 @@ export const authController = {
       jwtService.generateAccessToken({
         id: user.id,
         role: user.role,
+        isActive: user.isActive,
       }),
       jwtService.generateAndSaveRefreshToken(user.id),
     ])
@@ -126,6 +137,9 @@ export const authController = {
     const { accessToken, refreshToken: newRefreshToken } =
       await jwtService.verifyAndRotateAccessToken(refreshToken)
     await cookieUtil.setRefreshTokenCookie(c, newRefreshToken)
-    return c.json<RotateAccessTokenResponse>({ success: true, data: { accessToken } }, 200)
+    return c.json<RotateAccessTokenResponse>(
+      { success: true, data: { accessToken } },
+      200,
+    )
   },
 }
