@@ -3,7 +3,7 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
-import json from "@eslint/json";
+import prettierRecommended from "eslint-plugin-prettier/recommended";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export const react = defineConfig([
@@ -21,4 +21,5 @@ export const react = defineConfig([
       globals: globals.browser,
     },
   },
+  prettierRecommended,
 ]);

@@ -1,6 +1,6 @@
 {
+  "extends": "@repo/tsconfig/bun.json",
   "compilerOptions": {
-    "strict": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   }

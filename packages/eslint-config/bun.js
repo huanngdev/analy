@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import json from "@eslint/json";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
+import prettierRecommended from "eslint-plugin-prettier/recommended";
 import tseslint from "typescript-eslint";
 
 export const bun = defineConfig([
@@ -28,4 +29,5 @@ export const bun = defineConfig([
     language: "json/json5",
     extends: ["json/recommended"],
   },
+  prettierRecommended,
 ]);
