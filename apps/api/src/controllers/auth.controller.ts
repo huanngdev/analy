@@ -6,10 +6,12 @@ import {
   type SignInResponse,
   type SignOutResponse,
   type RotateAccessTokenResponse,
+  type SelectUserWithPassword,
+  type GetMeResponse,
 } from '@repo/shared'
 import type { Context } from 'hono'
 import { logger } from '../config/pino'
-import { BadRequestError, ConflictError, InternalServerError } from '../errors'
+import { BadRequestError, ConflictError, InternalServerError, UnauthorizedError } from '../errors'
 import { userService } from '../services/user.service'
 import { getAvatarUrl } from '../utils/avatar.util'
 import { getEmailPrefix } from '../utils/email.util'
@@ -106,8 +108,17 @@ export const authController = {
       200,
     )
   },
-  // me: async (c: Context) => {},
-  rotateRefreshToken: async (c: Context) => {
+  me: async (c: Context) => {
+    const user = c.get('user') as SelectUserWithPassword
+    if (!user) {
+      throw new UnauthorizedError('Unauthorized')
+    }
+    return c.json<GetMeResponse>(
+      { success: true, data: { user: userService.removePassword(user) } },
+      200,
+    )
+  },
+  rotateAccessToken: async (c: Context) => {
     const refreshToken = await cookieUtil.getRefreshTokenCookie(c)
     if (!refreshToken) {
       throw new BadRequestError('Refresh token is required')
