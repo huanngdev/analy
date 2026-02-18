@@ -1,14 +1,17 @@
 import { slugify, type SignUpResponse, type SignUpSchema } from "@repo/shared";
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { logger } from "../config/pino";
 import { userService } from "../services/user.service";
 import { getAvatarUrl } from "../utils/avatar.util";
 import { getEmailPrefix } from "../utils/email.util";
 
 export const authController = {
-  signUp: async (c: Context<any, any, { out: { json: SignUpSchema } }>) => {
+  signUp: async (c: Context) => {
     try {
-      const { email, name, password } = c.req.valid("json");
+      const { email, name, password } = c.req.valid(
+        "json" as never,
+      ) as unknown as SignUpSchema;
 
       const isEmailExists = await userService.checkEmailExists(email);
 
@@ -35,12 +38,13 @@ export const authController = {
         },
         201,
       );
-    } catch (error) {
+    } catch (error: unknown) {
+      logger.error(error);
       throw new HTTPException(500, { message: "Internal server error" });
     }
   },
-  signIn: async (c: Context) => {},
-  signOut: async (c: Context) => {},
-  me: async (c: Context) => {},
-  rotateRefreshToken: async (c: Context) => {},
+  // signIn: async (c: Context) => {},
+  // signOut: async (c: Context) => {},
+  // me: async (c: Context) => {},
+  // rotateRefreshToken: async (c: Context) => {},
 };

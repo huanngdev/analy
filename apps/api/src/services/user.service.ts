@@ -4,6 +4,11 @@ import { db } from "../infrastructure/db";
 import { password } from "../utils/password.util";
 
 export const userService = {
+  removePassword: (user: SelectUser): SelectUser => {
+    const userWithoutPassword = { ...user };
+    delete (userWithoutPassword as Record<string, unknown>).password;
+    return userWithoutPassword as SelectUser;
+  },
   checkEmailExists: async (email: string): Promise<boolean> => {
     const user = await db
       .select({ id: usersTable.id })
@@ -24,8 +29,7 @@ export const userService = {
       return undefined;
     }
 
-    const { password: _, ...userWithoutPassword } = newUser;
-    return userWithoutPassword as SelectUser;
+    return userService.removePassword(newUser);
   },
   getUserByEmail: async (email: string): Promise<SelectUser | undefined> => {
     const user = await db
