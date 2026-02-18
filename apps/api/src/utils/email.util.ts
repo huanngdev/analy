@@ -1,3 +1,3 @@
 export const getEmailPrefix = (email: string): string => {
-  return email.split("@")[0] ?? "";
-};
+  return email.split('@')[0] ?? ''
+}

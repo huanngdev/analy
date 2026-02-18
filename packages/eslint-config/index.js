@@ -1,2 +1,2 @@
-export * from "./react";
-export * from "./bun";
+export * from "./react.js";
+export * from "./bun.js";

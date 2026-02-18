@@ -1,11 +1,12 @@
 import js from "@eslint/js";
 import json from "@eslint/json";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
 import tseslint from "typescript-eslint";
 
 export const bun = defineConfig([
+  globalIgnores(["**/migrations/meta/**"]),
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     extends: [js.configs.recommended, tseslint.configs.recommended],

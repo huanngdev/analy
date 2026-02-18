@@ -1,17 +1,17 @@
-import pino from "pino";
+import pino from 'pino'
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = process.env.NODE_ENV === 'production'
 
 export const logger = pino({
-  level: "info",
+  level: 'info',
   transport: isProd
     ? undefined
     : {
-        target: "pino-pretty",
+        target: 'pino-pretty',
         options: {
           colorize: true,
-          translateTime: "HH:MM:ss Z",
-          ignore: "pid,hostname",
+          translateTime: 'HH:MM:ss Z',
+          ignore: 'pid,hostname',
         },
       },
   formatters: {
@@ -19,11 +19,11 @@ export const logger = pino({
   },
   timestamp: pino.stdTimeFunctions.isoTime,
   redact: {
-    paths: ["req.headers.authorization", "password", "user.email", "cookie"],
-    censor: "***",
+    paths: ['req.headers.authorization', 'password', 'user.email', 'cookie'],
+    censor: '***',
   },
-});
+})
 
 export const customLogger = (...params: Parameters<typeof logger.info>) => {
-  logger.info(...params);
-};
+  logger.info(...params)
+}

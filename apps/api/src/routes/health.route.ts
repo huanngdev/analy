@@ -1,8 +1,8 @@
-import { Hono } from "hono";
-import { healthController } from "../controllers";
+import { Hono } from 'hono'
+import { healthController } from '../controllers'
 
-const healthRoute = new Hono();
+const healthRoute = new Hono()
 
-healthRoute.get("/", healthController.getHealth);
+healthRoute.get('/', healthController.getHealth)
 
-export default healthRoute;
+export default healthRoute

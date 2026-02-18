@@ -1,4 +1,4 @@
-import type { Config } from 'prettier'
+import type { Config } from "prettier";
 
-export declare const config: Config
-export default config
+export declare const config: Config;
+export default config;

@@ -1,12 +1,12 @@
-import slugifyFn from "slugify";
+import slugifyFn from 'slugify'
 
 export function slugify(text: string) {
   return slugifyFn(text, {
-    replacement: "-",
+    replacement: '-',
     remove: undefined,
     lower: true,
     strict: false,
-    locale: "en",
+    locale: 'en',
     trim: true,
-  });
+  })
 }
