@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
-import env from './config/env'
+import env from '@/config/env'
 import { logger } from 'hono/logger'
-import { customLogger } from './config/pino'
+import { customLogger } from '@/config/pino'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
 import { cors } from 'hono/cors'
 import { rateLimiter } from 'hono-rate-limiter'
-import routes from './routes'
-import { errorHandler } from './middlewares'
+import routes from '@/routes'
+import { errorHandler } from '@/middlewares'
 
 const app = new Hono()
 
