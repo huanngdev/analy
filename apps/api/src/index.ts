@@ -7,6 +7,7 @@ import { secureHeaders } from 'hono/secure-headers'
 import { cors } from 'hono/cors'
 import { rateLimiter } from 'hono-rate-limiter'
 import routes from './routes'
+import { errorHandler } from './middlewares'
 
 const app = new Hono()
 
@@ -31,6 +32,7 @@ app.use(
   }),
 )
 
+app.onError(errorHandler)
 app.route('/api', routes)
 
 export default {
