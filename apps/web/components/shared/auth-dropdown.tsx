@@ -1,24 +1,19 @@
 "use client";
 
-import { LinkButton } from "@/components/ui/link-button";
-import { useAuthStore } from "@/stores/auth.store";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { LinkButton } from "@/components/ui/link-button";
 import { useSignOut } from "@/hooks/auth/use-sign-out";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth.store";
 import { LogOutIcon } from "lucide-react";
 
 export function AuthDropdown() {
@@ -51,7 +46,7 @@ export function AuthDropdown() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => signOut()}>
+          <DropdownMenuItem onClick={() => signOut()} variant="destructive">
             <LogOutIcon />
             Log out
           </DropdownMenuItem>

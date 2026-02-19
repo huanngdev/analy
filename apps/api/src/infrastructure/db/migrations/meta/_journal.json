@@ -15,6 +15,13 @@
       "when": 1771355161152,
       "tag": "0001_amusing_power_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771514126448,
+      "tag": "0002_fast_famine",
+      "breakpoints": true
     }
   ]
 }

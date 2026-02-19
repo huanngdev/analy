@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -95,7 +94,7 @@ export default function SignUpPage() {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 px-4">
         <Field orientation="horizontal">
           <Button
             type="submit"
@@ -120,7 +119,7 @@ export default function SignUpPage() {
             Sign Up
           </Link>
         </div>
-      </CardFooter>
+      </div>
     </Card>
   );
 }

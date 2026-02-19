@@ -1,5 +1,6 @@
 import {
   boolean,
+  index,
   pgTable,
   text,
   timestamp,
@@ -9,18 +10,26 @@ import {
 
 export const userRole = pgEnum('user_role', ['ADMIN', 'REGULAR'])
 
-export const usersTable = pgTable('users_table', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  email: text('email').notNull().unique(),
-  name: text('name').notNull(),
-  slug: text('slug').notNull().unique(),
-  password: text('password').notNull(),
-  role: userRole('role').notNull().default('REGULAR'),
-  avatar_url: text('avatar_url').notNull().default(''),
-  isActive: boolean('is_active').notNull().default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+export const usersTable = pgTable(
+  'users_table',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    email: text('email').notNull().unique(),
+    name: text('name').notNull(),
+    slug: text('slug').notNull().unique(),
+    password: text('password').notNull(),
+    role: userRole('role').notNull().default('REGULAR'),
+    avatar_url: text('avatar_url').notNull().default(''),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [
+    index('idx_users_role').on(table.role),
+    index('idx_users_is_active').on(table.isActive),
+    index('idx_users_created_at').on(table.createdAt),
+  ],
+)
 
 export type UserRole = (typeof userRole.enumValues)[number]
 export type InsertUser = typeof usersTable.$inferInsert

@@ -12,6 +12,14 @@ const MAX_ROTATE = 3;
 
 type RetryableConfig = InternalAxiosRequestConfig & { _retryCount?: number };
 
+axiosInstance.interceptors.request.use(
+  (config) => {
+    config.headers.Authorization = `Bearer ${useAuthStore.getState().accessToken}`;
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {

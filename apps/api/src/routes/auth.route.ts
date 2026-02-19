@@ -17,9 +17,5 @@ authRoute.post(
 )
 authRoute.post('/sign-out', authMiddleware, authController.signOut)
 authRoute.get('/me', authMiddleware, authController.me)
-authRoute.post(
-  '/rotate-access-token',
-  authMiddleware,
-  authController.rotateAccessToken,
-)
+authRoute.post('/rotate-access-token', authController.rotateAccessToken)
 export default authRoute
