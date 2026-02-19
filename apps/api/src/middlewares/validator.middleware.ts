@@ -11,6 +11,7 @@ export const validate = <
   schema: T,
 ) => {
   return validator(target, (value, c) => {
+    console.log(value)
     const parsed = schema.safeParse(value)
 
     if (!parsed.success) {
