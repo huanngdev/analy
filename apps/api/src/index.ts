@@ -16,7 +16,7 @@ app.use(requestId())
 app.use(secureHeaders())
 app.use(
   cors({
-    origin: '*',
+    origin: env.CLIENT_URL,
     allowHeaders: ['Authorization', 'Content-Type'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,

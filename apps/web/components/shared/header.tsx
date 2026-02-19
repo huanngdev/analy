@@ -34,7 +34,7 @@ export function Header() {
     },
   ];
   return (
-    <header className="fixed top-0 left-0 right-0 z-10 py-2">
+    <header className="fixed top-0 left-0 right-0 z-10 py-2 bg-background/50 backdrop-blur-sm">
       <nav className="container mx-auto flex items-center h-8">
         <div className="flex items-center gap-10 flex-1">
           <Link href="/" className="flex items-center gap-2">

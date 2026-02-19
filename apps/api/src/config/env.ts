@@ -4,6 +4,7 @@ import { logger } from './pino'
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production']),
   PORT: z.coerce.number().default(3000),
+  CLIENT_URL: z.string().default('http://localhost:3000'),
   DATABASE_URL: z.string(),
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z.coerce.number().default(6379),

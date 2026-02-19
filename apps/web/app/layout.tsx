@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryClientProvider } from "@/components/providers/query-client-provider";
+import { RefreshPageProvider } from "@/components/providers/refresh-page-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
@@ -38,7 +39,9 @@ export default function RootLayout({
             defaultTheme="dark"
             disableTransitionOnChange
           >
-            <QueryClientProvider>{children}</QueryClientProvider>
+            <QueryClientProvider>
+              <RefreshPageProvider>{children}</RefreshPageProvider>
+            </QueryClientProvider>
             <Toaster richColors position="bottom-right" />
           </ThemeProvider>
         </body>
