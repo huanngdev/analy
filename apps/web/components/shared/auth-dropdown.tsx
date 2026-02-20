@@ -14,11 +14,20 @@ import { LinkButton } from "@/components/ui/link-button";
 import { useSignOut } from "@/hooks/auth/use-sign-out";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth.store";
-import { LogOutIcon } from "lucide-react";
+import {
+  CreditCardIcon,
+  LayoutDashboard,
+  LogOutIcon,
+  SettingsIcon,
+  UserIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function AuthDropdown() {
   const { user } = useAuthStore();
   const { signOut } = useSignOut();
+  const pathname = usePathname();
   if (!user)
     return (
       <div className="flex items-center gap-2">
@@ -31,18 +40,40 @@ export function AuthDropdown() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Avatar className={cn("size-8")}>
-          <AvatarImage src={user.avatar_url} />
-          <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
+      <div className="flex items-center gap-2">
+        {pathname.startsWith("/dashboard") ? null : (
+          <LinkButton variant="outline" href="/dashboard/organizations">
+            Dashboard
+          </LinkButton>
+        )}
+        <DropdownMenuTrigger>
+          <Avatar className={cn("size-8")}>
+            <AvatarImage src={user.avatar_url} />
+            <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+      </div>
       <DropdownMenuContent className="w-40" align="start">
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Billing</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <Link href="/dashboard/organizations">
+            <DropdownMenuItem>
+              <LayoutDashboard />
+              Dashboard
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuItem>
+            <UserIcon />
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <CreditCardIcon />
+            Billing
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <SettingsIcon />
+            Settings
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
