@@ -21,7 +21,7 @@ export default function OrganizationPage() {
   const organizations = data?.data.organizations ?? [];
 
   return (
-    <div className="flex flex-col gap-6 py-8">
+    <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight">
         Your Organizations
       </h1>

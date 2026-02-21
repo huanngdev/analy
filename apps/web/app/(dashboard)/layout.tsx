@@ -1,16 +1,11 @@
-import { Header } from "@/components/shared/header";
+import { DashboardHeader } from "@/components/shared/dashboard/dashboard-header";
+import DashboardLayout from "@/components/shared/dashboard/dashboard-layout";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Header />
-      <main className="container mx-auto pt-16 pb-10 min-h-screen">
-        {children}
-      </main>
+      <DashboardHeader />
+      <DashboardLayout>{children}</DashboardLayout>
     </>
   );
 }
