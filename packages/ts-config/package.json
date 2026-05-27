@@ -1,0 +1,10 @@
+{
+  "name": "@repo/ts-config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base.json": "./base.json",
+    "./vite.json": "./vite.json",
+    "./hono.json": "./hono.json"
+  }
+}

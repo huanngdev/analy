@@ -1,0 +1,9 @@
+# <type>(optional-scope): <short summary>
+#
+# Examples:
+# feat(api): add health endpoint
+# fix(web): handle empty dashboard state
+# chore(repo): update lint config
+#
+# Allowed types:
+# build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test
