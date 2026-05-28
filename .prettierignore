@@ -3,3 +3,5 @@ dist
 .turbo
 bun.lock
 coverage
+.env
+.env.*

@@ -18,6 +18,10 @@
     "lint": "bunx turbo lint",
     "lint:staged": "lint-staged",
     "commitlint": "commitlint --edit",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "infra:logs": "docker compose logs -f",
+    "infra:ps": "docker compose ps",
     "clean": "bunx turbo clean && rm -rf .turbo && find apps packages -name 'dist' -type d -prune -exec rm -rf {} + && find apps packages -name '*.tsbuildinfo' -type f -delete",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
