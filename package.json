@@ -9,10 +9,11 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "dev": "bunx turbo --ui=tui dev --filter=web --filter=api --filter=@repo/shared",
-    "dev:stream": "bunx turbo --ui=stream dev --filter=web --filter=api --filter=@repo/shared",
+    "dev": "bunx turbo --ui=tui dev //#dev:studio --filter=web --filter=api --filter=@repo/shared",
+    "dev:stream": "bunx turbo --ui=stream dev //#dev:studio --filter=web --filter=api --filter=@repo/shared",
     "dev:web": "bunx turbo --ui=tui dev --filter=web",
     "dev:api": "bunx turbo --ui=tui dev --filter=api",
+    "dev:studio": "drizzle-kit studio --config apps/api/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config apps/api/drizzle.config.ts",
     "build": "bunx turbo build",
     "typecheck": "bunx turbo typecheck",
@@ -36,6 +37,7 @@
     "lint-staged": "^17.0.5",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "tsc-alias": "^1.8.17",
     "turbo": "^2.9.15",
     "typescript": "^6.0.3"
   }

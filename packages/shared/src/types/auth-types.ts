@@ -1,5 +1,5 @@
-import type { AUTH_PROVIDERS, SYSTEM_ROLES } from "../constants/auth-constants";
-import type { refreshSessions, userAccounts, users } from "../db/schema";
+import type { AUTH_PROVIDERS, SYSTEM_ROLES } from "@/constants/auth-constants";
+import type { refreshSessions, userAccounts, users } from "@/db/schema";
 
 export type SystemRole = (typeof SYSTEM_ROLES)[number];
 

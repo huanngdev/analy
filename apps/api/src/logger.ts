@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 
-import type { AppBindings } from "./app-bindings";
+import type { AppBindings } from "@/app-bindings";
 
 const colorEnabled = process.env.NO_COLOR === undefined;
 
@@ -111,6 +111,20 @@ export function logDatabaseReady() {
 export function logDatabaseError(error: unknown) {
   console.error(
     `${color.gray("db")} ${color.red("error")} PostgreSQL ${color.dim(formatError(error))}`,
+  );
+}
+
+export function logRedisConnecting() {
+  console.log(`${color.gray("redis")} ${color.cyan("connect")} Redis`);
+}
+
+export function logRedisReady() {
+  console.log(`${color.gray("redis")} ${color.green("ready")} Redis`);
+}
+
+export function logRedisError(error: unknown) {
+  console.error(
+    `${color.gray("redis")} ${color.red("error")} Redis ${color.dim(formatError(error))}`,
   );
 }
 

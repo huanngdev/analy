@@ -1,9 +1,11 @@
-import app from "./app";
-import { assertDatabaseConnection } from "./db";
-import { env } from "./env";
-import { logApiStartup } from "./logger";
+import app from "@/app";
+import { assertDatabaseConnection } from "@/db";
+import { env } from "@/env";
+import { logApiStartup } from "@/logger";
+import { assertRedisConnection } from "@/redis";
 
 await assertDatabaseConnection();
+await assertRedisConnection();
 
 Bun.serve({
   fetch: app.fetch,

@@ -1,24 +1,16 @@
+import type { ApiErrorResponse } from "@repo/shared";
 import type { ErrorHandler } from "hono";
 import { ZodError } from "zod";
 
-import type { AppBindings } from "../app-bindings";
-import { isAppError } from "../errors/app-error";
-import { logUnhandledError } from "../logger";
-
-type ErrorResponse = {
-  error: {
-    code: string;
-    message: string;
-    requestId: string;
-  };
-  ok: false;
-};
+import type { AppBindings } from "@/app-bindings";
+import { isAppError } from "@/errors/app-error";
+import { logUnhandledError } from "@/logger";
 
 export const errorHandler: ErrorHandler<AppBindings> = (error, c) => {
   const requestId = c.get("requestId") ?? crypto.randomUUID();
 
   if (isAppError(error)) {
-    return c.json<ErrorResponse>(
+    return c.json<ApiErrorResponse>(
       {
         error: {
           code: error.code,
@@ -32,7 +24,7 @@ export const errorHandler: ErrorHandler<AppBindings> = (error, c) => {
   }
 
   if (error instanceof ZodError) {
-    return c.json<ErrorResponse>(
+    return c.json<ApiErrorResponse>(
       {
         error: {
           code: "VALIDATION_ERROR",
@@ -47,7 +39,7 @@ export const errorHandler: ErrorHandler<AppBindings> = (error, c) => {
 
   logUnhandledError(error, requestId);
 
-  return c.json<ErrorResponse>(
+  return c.json<ApiErrorResponse>(
     {
       error: {
         code: "INTERNAL_SERVER_ERROR",

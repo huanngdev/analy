@@ -2,12 +2,12 @@ import { dbSchema } from "@repo/shared";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { env } from "./env";
+import { env } from "@/env";
 import {
   logDatabaseConnecting,
   logDatabaseError,
   logDatabaseReady,
-} from "./logger";
+} from "@/logger";
 
 const client = postgres(env.DATABASE_URL, {
   connect_timeout: 5,

@@ -1,6 +1,6 @@
 import { cors } from "hono/cors";
 
-import { env } from "../env";
+import { env } from "@/env";
 
 const allowedOrigins = new Set(env.CORS_ORIGINS);
 
