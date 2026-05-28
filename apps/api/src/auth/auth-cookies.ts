@@ -10,6 +10,11 @@ import type { CookieOptions } from "hono/utils/cookie";
 import { env } from "@/env";
 
 const secureCookie = env.NODE_ENV === "production";
+const OAUTH_COOKIE_MAX_AGE_SECONDS = 10 * 60;
+const oauthStateCookieName = (provider: string) =>
+  `analy_oauth_${provider}_state`;
+const oauthCodeVerifierCookieName = (provider: string) =>
+  `analy_oauth_${provider}_code_verifier`;
 
 function cookieOptions(maxAge: number): CookieOptions {
   return {
@@ -19,6 +24,13 @@ function cookieOptions(maxAge: number): CookieOptions {
     path: "/",
     sameSite: "Lax",
     secure: secureCookie,
+  };
+}
+
+function oauthCookieOptions(maxAge: number): CookieOptions {
+  return {
+    ...cookieOptions(maxAge),
+    maxAge,
   };
 }
 
@@ -53,4 +65,43 @@ export function setAuthCookies(
 export function clearAuthCookies(c: Context) {
   deleteCookie(c, AUTH_COOKIE_NAMES.accessToken, cookieOptions(0));
   deleteCookie(c, AUTH_COOKIE_NAMES.refreshToken, cookieOptions(0));
+}
+
+export function getOAuthStateCookie(c: Context, provider: string) {
+  return getCookie(c, oauthStateCookieName(provider));
+}
+
+export function getOAuthCodeVerifierCookie(c: Context, provider: string) {
+  return getCookie(c, oauthCodeVerifierCookieName(provider));
+}
+
+export function setOAuthStateCookie(
+  c: Context,
+  provider: string,
+  state: string,
+) {
+  setCookie(
+    c,
+    oauthStateCookieName(provider),
+    state,
+    oauthCookieOptions(OAUTH_COOKIE_MAX_AGE_SECONDS),
+  );
+}
+
+export function setOAuthCodeVerifierCookie(
+  c: Context,
+  provider: string,
+  codeVerifier: string,
+) {
+  setCookie(
+    c,
+    oauthCodeVerifierCookieName(provider),
+    codeVerifier,
+    oauthCookieOptions(OAUTH_COOKIE_MAX_AGE_SECONDS),
+  );
+}
+
+export function clearOAuthCookies(c: Context, provider: string) {
+  deleteCookie(c, oauthStateCookieName(provider), oauthCookieOptions(0));
+  deleteCookie(c, oauthCodeVerifierCookieName(provider), oauthCookieOptions(0));
 }

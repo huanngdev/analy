@@ -3,10 +3,12 @@ import type { AuthLoginRequest, AuthRegisterRequest } from "@repo/shared";
 import { signAccessToken } from "@/auth/access-token";
 import {
   createEmailPasswordUser,
+  findOrCreateOAuthUser,
   findAuthUserById,
   findUserRecordByEmail,
   mapUserRecordToAuthUser,
 } from "@/auth/auth-repository";
+import type { OAuthUserProfile } from "@/auth/oauth-service";
 import { hashPassword, verifyPassword } from "@/auth/password";
 import type { AuthRequestContext } from "@/auth/request-context";
 import {
@@ -57,6 +59,19 @@ export async function loginWithEmailPassword(
   }
 
   const user = mapUserRecordToAuthUser(userRecord);
+  const [accessToken, refreshToken] = await Promise.all([
+    signAccessToken(user),
+    createRefreshSession(user.id, context),
+  ]);
+
+  return { accessToken, refreshToken, user };
+}
+
+export async function loginWithOAuth(
+  input: OAuthUserProfile,
+  context: AuthRequestContext,
+) {
+  const user = await findOrCreateOAuthUser(input);
   const [accessToken, refreshToken] = await Promise.all([
     signAccessToken(user),
     createRefreshSession(user.id, context),

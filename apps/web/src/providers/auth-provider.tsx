@@ -18,18 +18,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async function bootstrapAuth() {
       await useAuthStore.persist.rehydrate();
 
-      const { auth, clearAuth, setAuth } = useAuthStore.getState();
-
-      if (!auth?.user) {
-        if (active) {
-          setBootstrapped(true);
-        }
-
-        return;
-      }
+      const { clearAuth, setAuth } = useAuthStore.getState();
 
       try {
-        setAuth(await getMe());
+        setAuth(await getMe({ redirectOnAuthFailure: false }));
       } catch {
         clearAuth();
       } finally {

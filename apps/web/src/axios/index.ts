@@ -14,6 +14,8 @@ const MAX_AUTH_RETRIES = 3;
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _authRetryCount?: number;
+  _redirectOnAuthFailure?: boolean;
+  _skipAuthRetry?: boolean;
 };
 
 const authClient = axios.create({
@@ -37,6 +39,11 @@ export const apiClient = axios.create({
 });
 
 let rotateTokenPromise: Promise<void> | undefined;
+
+function clearLocalAuthState() {
+  queryClient.clear();
+  useAuthStore.getState().clearAuth();
+}
 
 function isAuthEndpoint(config: AxiosRequestConfig) {
   const url = config.url ?? "";
@@ -66,8 +73,7 @@ async function logoutUser() {
   } catch {
     // Best effort: local state must still be cleared when server logout fails.
   } finally {
-    queryClient.clear();
-    useAuthStore.getState().clearAuth();
+    clearLocalAuthState();
 
     if (window.location.pathname !== "/login") {
       window.location.assign("/login");
@@ -80,14 +86,26 @@ apiClient.interceptors.response.use(
   async (error: AxiosError<ApiErrorResponse>) => {
     const config = error.config as RetryableRequestConfig | undefined;
 
-    if (!config || error.response?.status !== 401 || isAuthEndpoint(config)) {
+    if (
+      !config ||
+      error.response?.status !== 401 ||
+      isAuthEndpoint(config) ||
+      config._skipAuthRetry
+    ) {
       return Promise.reject(error);
     }
+
+    const redirectOnAuthFailure = config._redirectOnAuthFailure ?? true;
 
     config._authRetryCount = (config._authRetryCount ?? 0) + 1;
 
     if (config._authRetryCount > MAX_AUTH_RETRIES) {
-      await logoutUser();
+      if (redirectOnAuthFailure) {
+        await logoutUser();
+      } else {
+        clearLocalAuthState();
+      }
+
       return Promise.reject(error);
     }
 
@@ -95,11 +113,21 @@ apiClient.interceptors.response.use(
       await rotateAuthCookies();
       return apiClient(config);
     } catch (rotationError) {
-      await logoutUser();
+      if (redirectOnAuthFailure) {
+        await logoutUser();
+      } else {
+        clearLocalAuthState();
+      }
+
       return Promise.reject(rotationError);
     }
   },
 );
+
+export type ApiRequestConfig = AxiosRequestConfig & {
+  _redirectOnAuthFailure?: boolean;
+  _skipAuthRetry?: boolean;
+};
 
 export function isApiError(
   error: unknown,

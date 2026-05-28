@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
 import { useRegister } from "@/features/auth/hooks/use-register";
 
 export function RegisterForm() {
@@ -67,6 +68,7 @@ export function RegisterForm() {
         {isLoading && <Spinner data-icon="inline-start" />}
         Create account
       </Button>
+      <OAuthButtons />
       <FieldDescription className="text-center">
         Already have an account? <Link to="/login">Sign in</Link>
       </FieldDescription>

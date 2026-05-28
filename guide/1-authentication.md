@@ -9,7 +9,7 @@ This guide is the source of truth for Analy authentication and the handoff docum
 - Refresh sessions are active in Redis and audited in PostgreSQL.
 - Auth request/response schemas, auth-facing types, role/provider constants, cookie names, and token TTLs live in `packages/shared`.
 - API docs use OpenAPI 3.1 with Scalar in development only.
-- OAuth tables/providers are prepared, but GitHub and Google routes are not implemented yet.
+- GitHub and Google OAuth are implemented with `arctic`; OAuth accounts reuse `user_accounts` and create a user automatically when no matching user exists.
 - Organization/project memberships and permissions are not returned yet; `/auth/me` currently returns empty arrays for memberships, organizations, and permissions.
 
 ## Runtime Infrastructure
@@ -50,13 +50,13 @@ Use a two-token model with short-lived access tokens and long-lived refresh sess
 - `POST /auth/logout`: revokes the refresh session if a refresh cookie is present and clears both auth cookies.
 - `POST /auth/rotate-token`: validates and rotates the refresh token, signs a new access token, sets both cookies, preserves the original refresh-session expiry, and returns safe user data.
 - `GET /auth/me`: uses the authentication middleware to verify the access token cookie, loads the user from PostgreSQL, and returns safe user data plus empty membership/organization/permission arrays.
-
-## Planned Endpoints
-
 - `GET /auth/github`: start GitHub OAuth.
 - `GET /auth/github/callback`: complete GitHub OAuth.
 - `GET /auth/google`: start Google OAuth.
 - `GET /auth/google/callback`: complete Google OAuth.
+
+## Planned Endpoints
+
 - Future organization/project permission endpoints must authorize from PostgreSQL memberships and roles, not JWT claims alone.
 
 ## API Docs Rules
@@ -78,6 +78,12 @@ Validated by `packages/shared/src/validation/env-validation.ts` and parsed in `a
 - `REDIS_URL`: Redis connection URL.
 - `CORS_ORIGINS`: comma-separated origin list, defaults to `http://localhost:3000`.
 - `AUTH_COOKIE_DOMAIN`: optional cookie domain.
+- `API_PUBLIC_URL`: public API origin used to build OAuth callback URLs, defaults to `http://localhost:5000`.
+- `WEB_APP_URL`: web origin used after OAuth success redirects, defaults to `http://localhost:3000`.
+- `GITHUB_CLIENT_ID`: GitHub OAuth app client ID.
+- `GITHUB_CLIENT_SECRET`: GitHub OAuth app client secret.
+- `GOOGLE_CLIENT_ID`: Google OAuth web client ID.
+- `GOOGLE_CLIENT_SECRET`: Google OAuth web client secret.
 - `NODE_ENV`: `development`, `test`, or `production`, defaults to `development`.
 - `PORT`: API port, defaults to `5000`.
 
@@ -103,6 +109,7 @@ Important rules:
 - `apps/api/src/auth/auth-routes.ts`: Hono auth route definitions, OpenAPI route metadata, request parsing, response validation, and cookie wiring.
 - `apps/api/src/auth/auth-service.ts`: email/password registration, login, token rotation orchestration, and current-user lookup rules.
 - `apps/api/src/auth/auth-repository.ts`: Drizzle user/account/session-audit queries and user-record mapping.
+- `apps/api/src/auth/oauth-service.ts`: GitHub/Google authorization URLs, callback token exchange, and provider profile loading.
 - `apps/api/src/auth/access-token.ts`: JWT signing and verification for access tokens.
 - `apps/api/src/auth/auth-cookies.ts`: read, set, and clear auth cookies with secure cookie options.
 - `apps/api/src/auth/password.ts`: Argon2 password hashing and verification.
@@ -157,6 +164,14 @@ Login:
 4. Service creates access token and refresh session.
 5. Route sets cookies and returns safe user data.
 
+OAuth login:
+
+1. Start route creates an OAuth `state`, stores it in an HttpOnly cookie, and redirects to the provider.
+2. Google also stores a PKCE code verifier in an HttpOnly cookie.
+3. Callback route validates `state`, exchanges `code` for provider tokens, and loads a verified provider email/profile.
+4. Repository finds a linked provider account, links an existing user with the same email, or creates a new passwordless user.
+5. Service creates Analy access/refresh cookies and redirects to the dashboard.
+
 Token rotation:
 
 1. Route reads refresh cookie.
@@ -198,7 +213,7 @@ Current user:
 - If the editor reports missing exports from `@repo/shared`, build the shared package and restart the TypeScript server; package exports point to `packages/shared/dist`.
 - When adding a route, update OpenAPI metadata in the same route file.
 - When changing auth request/response shape, update shared Zod schemas first, then inferred types, then route/service usage.
-- When implementing OAuth, reuse `user_accounts` and avoid adding provider-specific columns to `users`.
+- OAuth reuses `user_accounts` and avoids provider-specific columns on `users`.
 - When implementing organizations/projects in `/auth/me`, load memberships/permissions from PostgreSQL and scope checks by organization/project.
 - Add backend tests before expanding permission-sensitive behavior.
 
@@ -206,7 +221,7 @@ Current user:
 
 - `jose`: sign and verify JWT access tokens.
 - `@node-rs/argon2`: hash and verify passwords with Argon2id.
-- `arctic`: OAuth helpers for GitHub and Google login when OAuth is implemented.
+- `arctic`: OAuth helpers for GitHub and Google login.
 - `zod`: validate auth request bodies, responses, and environment variables.
 - `@hono/zod-openapi`: route-level OpenAPI metadata from Zod schemas.
 - `@scalar/hono-api-reference`: development API docs UI.

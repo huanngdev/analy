@@ -7,21 +7,35 @@ import {
   authSessionResponseSchema,
 } from "@repo/shared";
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import type { Context } from "hono";
 
 import type { AppBindings } from "@/app-bindings";
 import {
   clearAuthCookies,
+  clearOAuthCookies,
+  getOAuthCodeVerifierCookie,
+  getOAuthStateCookie,
   getRefreshTokenCookie,
   setAuthCookies,
+  setOAuthCodeVerifierCookie,
+  setOAuthStateCookie,
 } from "@/auth/auth-cookies";
 import {
   getAuthUser,
+  loginWithOAuth,
   loginWithEmailPassword,
   registerWithEmailPassword,
   rotateAuthTokens,
 } from "@/auth/auth-service";
+import {
+  createOAuthAuthorization,
+  getOAuthUserProfile,
+  type OAuthProvider,
+} from "@/auth/oauth-service";
 import { getAuthRequestContext, parseJsonBody } from "@/auth/request-context";
 import { revokeRefreshSession } from "@/auth/refresh-session-service";
+import { env } from "@/env";
+import { AppError } from "@/errors/app-error";
 import { requireAuthMiddleware } from "@/middleware/require-auth";
 
 export const authRoutes = new OpenAPIHono<AppBindings>();
@@ -139,6 +153,98 @@ const meRoute = createRoute({
   tags: ["Auth"],
 });
 
+const githubOAuthRoute = createRoute({
+  method: "get",
+  path: "/github",
+  responses: {
+    302: { description: "Redirect to GitHub OAuth." },
+    500: jsonContent(apiErrorResponseSchema, "Unexpected server error."),
+  },
+  tags: ["Auth"],
+});
+
+const githubOAuthCallbackRoute = createRoute({
+  method: "get",
+  path: "/github/callback",
+  responses: {
+    302: { description: "OAuth callback accepted and auth cookies set." },
+    401: jsonContent(apiErrorResponseSchema, "OAuth callback is invalid."),
+    500: jsonContent(apiErrorResponseSchema, "Unexpected server error."),
+  },
+  tags: ["Auth"],
+});
+
+const googleOAuthRoute = createRoute({
+  method: "get",
+  path: "/google",
+  responses: {
+    302: { description: "Redirect to Google OAuth." },
+    500: jsonContent(apiErrorResponseSchema, "Unexpected server error."),
+  },
+  tags: ["Auth"],
+});
+
+const googleOAuthCallbackRoute = createRoute({
+  method: "get",
+  path: "/google/callback",
+  responses: {
+    302: { description: "OAuth callback accepted and auth cookies set." },
+    401: jsonContent(apiErrorResponseSchema, "OAuth callback is invalid."),
+    500: jsonContent(apiErrorResponseSchema, "Unexpected server error."),
+  },
+  tags: ["Auth"],
+});
+
+function getOAuthCallbackInput(c: Context<AppBindings>) {
+  const code = c.req.query("code");
+  const state = c.req.query("state");
+  const error = c.req.query("error");
+
+  if (error) {
+    throw new AppError({
+      code: "UNAUTHORIZED",
+      message: "OAuth sign in was cancelled",
+      status: 401,
+    });
+  }
+
+  if (!code || !state) {
+    throw new AppError({
+      code: "UNAUTHORIZED",
+      message: "OAuth callback is invalid",
+      status: 401,
+    });
+  }
+
+  return { code, state };
+}
+
+async function handleOAuthCallback(
+  c: Context<AppBindings>,
+  provider: OAuthProvider,
+) {
+  const { code, state } = getOAuthCallbackInput(c);
+  const expectedState = getOAuthStateCookie(c, provider);
+  const codeVerifier = getOAuthCodeVerifierCookie(c, provider);
+
+  clearOAuthCookies(c, provider);
+
+  if (!expectedState || state !== expectedState) {
+    throw new AppError({
+      code: "UNAUTHORIZED",
+      message: "OAuth callback is invalid",
+      status: 401,
+    });
+  }
+
+  const profile = await getOAuthUserProfile(provider, code, codeVerifier);
+  const result = await loginWithOAuth(profile, getAuthRequestContext(c));
+
+  setAuthCookies(c, result.accessToken, result.refreshToken);
+
+  return c.redirect(`${env.WEB_APP_URL}/dashboard`, 302);
+}
+
 authRoutes.openapi(registerRoute, async (c) => {
   const input = authRegisterRequestSchema.parse(await parseJsonBody(c));
   const result = await registerWithEmailPassword(
@@ -171,6 +277,34 @@ authRoutes.openapi(loginRoute, async (c) => {
     200,
   );
 });
+
+authRoutes.openapi(githubOAuthRoute, (c) => {
+  const authorization = createOAuthAuthorization("github");
+
+  setOAuthStateCookie(c, "github", authorization.state);
+
+  return c.redirect(authorization.url.toString(), 302);
+});
+
+authRoutes.openapi(githubOAuthCallbackRoute, (c) =>
+  handleOAuthCallback(c, "github"),
+);
+
+authRoutes.openapi(googleOAuthRoute, (c) => {
+  const authorization = createOAuthAuthorization("google");
+
+  setOAuthStateCookie(c, "google", authorization.state);
+
+  if (authorization.codeVerifier) {
+    setOAuthCodeVerifierCookie(c, "google", authorization.codeVerifier);
+  }
+
+  return c.redirect(authorization.url.toString(), 302);
+});
+
+authRoutes.openapi(googleOAuthCallbackRoute, (c) =>
+  handleOAuthCallback(c, "google"),
+);
 
 authRoutes.openapi(logoutRoute, async (c) => {
   await revokeRefreshSession(getRefreshTokenCookie(c));

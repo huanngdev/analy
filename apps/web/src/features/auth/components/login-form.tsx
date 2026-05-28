@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useLogin } from "@/features/auth/hooks/use-login";
+import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
 
 export function LoginForm() {
   const { form, isLoading, onSubmit } = useLogin();
@@ -51,6 +52,7 @@ export function LoginForm() {
         {isLoading && <Spinner data-icon="inline-start" />}
         Sign in
       </Button>
+      <OAuthButtons />
       <FieldDescription className="text-center">
         New to Analy? <Link to="/register">Create an account</Link>
       </FieldDescription>

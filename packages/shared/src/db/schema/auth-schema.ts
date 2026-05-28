@@ -9,7 +9,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { AUTH_PROVIDERS, SYSTEM_ROLES } from "@/constants/auth-constants";
+import { AUTH_PROVIDERS, SYSTEM_ROLES } from "../../constants/auth-constants";
 
 export const systemRoleEnum = pgEnum("system_role", SYSTEM_ROLES);
 

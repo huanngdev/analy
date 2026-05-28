@@ -8,7 +8,12 @@ import type {
   AuthRotateTokenResponse,
 } from "@repo/shared";
 
-import { apiClient } from "@/axios";
+import { apiClient, type ApiRequestConfig } from "@/axios";
+
+type GetMeOptions = {
+  redirectOnAuthFailure?: boolean;
+  skipAuthRetry?: boolean;
+};
 
 export async function register(input: AuthRegisterRequest) {
   const response = await apiClient.post<AuthRegisterResponse>(
@@ -41,8 +46,13 @@ export async function rotateToken() {
   return response.data;
 }
 
-export async function getMe() {
-  const response = await apiClient.get<AuthMeResponse>("/auth/me");
+export async function getMe(options: GetMeOptions = {}) {
+  const config: ApiRequestConfig = {
+    _redirectOnAuthFailure: options.redirectOnAuthFailure,
+    _skipAuthRetry: options.skipAuthRetry,
+  };
+
+  const response = await apiClient.get<AuthMeResponse>("/auth/me", config);
 
   return response.data;
 }

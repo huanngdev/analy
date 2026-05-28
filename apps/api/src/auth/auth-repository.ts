@@ -1,16 +1,28 @@
 import type {
+  AuthProvider,
   AuthRegisterRequest,
   AuthUser,
+  NewUserAccount,
   NewRefreshSession,
   NewUser,
 } from "@repo/shared";
 import { refreshSessions, userAccounts, users } from "@repo/shared";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { AppError } from "@/errors/app-error";
 
 type UserRecord = typeof users.$inferSelect;
+type OAuthProvider = Exclude<AuthProvider, "email">;
+
+type OAuthUserInput = {
+  avatarUrl?: string | null;
+  email: string;
+  emailVerified: boolean;
+  name?: string | null;
+  provider: OAuthProvider;
+  providerAccountId: string;
+};
 
 function generateNameFromEmail(email: string) {
   const atIndex = email.indexOf("@");
@@ -75,6 +87,74 @@ export async function createEmailPasswordUser(
   });
 
   return toAuthUser(createdUser);
+}
+
+export async function findOrCreateOAuthUser(input: OAuthUserInput) {
+  const user = await db.transaction(async (tx) => {
+    const [linkedAccount] = await tx
+      .select({ user: users })
+      .from(userAccounts)
+      .innerJoin(users, eq(userAccounts.userId, users.id))
+      .where(
+        and(
+          eq(userAccounts.provider, input.provider),
+          eq(userAccounts.providerAccountId, input.providerAccountId),
+        ),
+      )
+      .limit(1);
+
+    if (linkedAccount) {
+      return linkedAccount.user;
+    }
+
+    const accountValues = (userId: string): NewUserAccount => ({
+      provider: input.provider,
+      providerAccountId: input.providerAccountId,
+      providerEmail: input.email,
+      providerEmailVerified: input.emailVerified,
+      userId,
+    });
+
+    const [existingUser] = await tx
+      .select()
+      .from(users)
+      .where(eq(users.email, input.email))
+      .limit(1);
+
+    if (existingUser) {
+      await tx
+        .insert(userAccounts)
+        .values(accountValues(existingUser.id))
+        .onConflictDoNothing({
+          target: [userAccounts.provider, userAccounts.providerAccountId],
+        });
+
+      return existingUser;
+    }
+
+    const userValues: NewUser = {
+      avatarUrl: input.avatarUrl ?? null,
+      email: input.email,
+      emailVerified: input.emailVerified,
+      name: input.name?.trim() || generateNameFromEmail(input.email),
+    };
+
+    const [createdUser] = await tx.insert(users).values(userValues).returning();
+
+    if (!createdUser) {
+      throw new AppError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Unable to create OAuth user",
+        status: 500,
+      });
+    }
+
+    await tx.insert(userAccounts).values(accountValues(createdUser.id));
+
+    return createdUser;
+  });
+
+  return toAuthUser(user);
 }
 
 export async function findUserRecordByEmail(email: string) {
