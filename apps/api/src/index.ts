@@ -1,11 +1,13 @@
 import app from "./app";
+import { assertDatabaseConnection } from "./db";
+import { env } from "./env";
 import { logApiStartup } from "./logger";
 
-const port = Number(process.env.PORT ?? 3000);
+await assertDatabaseConnection();
 
 Bun.serve({
   fetch: app.fetch,
-  port,
+  port: env.PORT,
 });
 
-logApiStartup(port);
+logApiStartup(env.PORT, env.NODE_ENV, env.CORS_ORIGINS);

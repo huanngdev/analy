@@ -16,6 +16,7 @@
     "clean": "rm -rf dist .turbo node_modules/.tmp"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
