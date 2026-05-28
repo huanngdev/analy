@@ -1,22 +1,15 @@
+import type { ApiErrorCode } from "@repo/shared";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-
-export type AppErrorCode =
-  | "BAD_REQUEST"
-  | "FORBIDDEN"
-  | "INTERNAL_SERVER_ERROR"
-  | "NOT_FOUND"
-  | "UNAUTHORIZED"
-  | "VALIDATION_ERROR";
 
 type AppErrorOptions = {
   cause?: unknown;
-  code: AppErrorCode;
+  code: ApiErrorCode;
   message: string;
   status: ContentfulStatusCode;
 };
 
 export class AppError extends Error {
-  readonly code: AppErrorCode;
+  readonly code: ApiErrorCode;
   readonly status: ContentfulStatusCode;
 
   constructor({ cause, code, message, status }: AppErrorOptions) {

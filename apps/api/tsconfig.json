@@ -2,6 +2,9 @@
   "extends": "@repo/ts-config/hono.json",
   "compilerOptions": {
     "outDir": "dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "rootDir": "src",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
   },

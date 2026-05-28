@@ -1,6 +1,6 @@
-export * from "./auth-schema";
+export * from "@/db/schema/auth-schema";
 
-import { refreshSessions, userAccounts, users } from "./auth-schema";
+import { refreshSessions, userAccounts, users } from "@/db/schema/auth-schema";
 
 export const dbSchema = {
   refreshSessions,

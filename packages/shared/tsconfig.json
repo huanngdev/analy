@@ -4,6 +4,9 @@
     "declaration": true,
     "noEmit": false,
     "outDir": "dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "rootDir": "src",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
   },

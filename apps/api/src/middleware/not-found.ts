@@ -1,20 +1,12 @@
+import type { ApiErrorResponse } from "@repo/shared";
 import type { NotFoundHandler } from "hono";
 
-import type { AppBindings } from "../app-bindings";
-
-type NotFoundResponse = {
-  error: {
-    code: "NOT_FOUND";
-    message: string;
-    requestId: string;
-  };
-  ok: false;
-};
+import type { AppBindings } from "@/app-bindings";
 
 export const notFoundHandler: NotFoundHandler<AppBindings> = (c) => {
   const requestId = c.get("requestId") ?? crypto.randomUUID();
 
-  return c.json<NotFoundResponse>(
+  return c.json<ApiErrorResponse>(
     {
       error: {
         code: "NOT_FOUND",

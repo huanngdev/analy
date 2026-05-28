@@ -16,6 +16,7 @@ These rules apply to agent and developer changes in this repository. MUST FOLLOW
 - Prefer inferred types from Drizzle, Zod, and shared schemas.
 - Use `unknown` for truly unknown input, then narrow it safely.
 - Do not silence TypeScript errors with unsafe casts unless there is a clear reason and a safer alternative is not available.
+- All the types must be in shared packages
 
 ## File Naming
 
@@ -31,6 +32,11 @@ These rules apply to agent and developer changes in this repository. MUST FOLLOW
 - Put reusable logic into focused services, repositories, auth helpers, and authorization helpers.
 - Validate requests with shared Zod schemas.
 - Use Drizzle schemas from `@repo/shared` for database work.
+- Document every API endpoint with OpenAPI when creating or changing routes.
+- Serve API docs with Scalar from an OpenAPI spec in development only, never in production.
+- Keep OpenAPI request, response, path, query, cookie, and auth metadata aligned with the route implementation.
+- Generate or define OpenAPI schemas from shared Zod validation schemas whenever practical to avoid contract drift.
+- Keep docs user-safe: do not expose secrets, internal stack traces, private environment names, or implementation-only details.
 - Use PostgreSQL as the source of truth, ClickHouse for analytics, Redis for cache/session state, and MinIO for object storage.
 - Handle all backend errors through global error handling middleware.
 - Do not duplicate try/catch response formatting in route handlers unless the handler can recover locally.

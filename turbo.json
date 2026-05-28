@@ -14,6 +14,11 @@
       "interruptible": true,
       "persistent": true
     },
+    "//#dev:studio": {
+      "cache": false,
+      "interruptible": true,
+      "persistent": true
+    },
     "lint": {},
     "clean": {
       "cache": false
