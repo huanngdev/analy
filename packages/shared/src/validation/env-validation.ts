@@ -6,7 +6,7 @@ const nodeEnvSchema = z
 
 const corsOriginsSchema = z.preprocess((value) => {
   if (typeof value !== "string") {
-    return ["http://localhost:5173"];
+    return ["http://localhost:3000"];
   }
 
   return value
@@ -18,14 +18,18 @@ const corsOriginsSchema = z.preprocess((value) => {
 export const apiEnvSchema = z.object({
   ACCESS_TOKEN_SECRET: z.string().min(32),
   AUTH_COOKIE_DOMAIN: z.string().min(1).optional(),
-  CORS_ORIGINS: corsOriginsSchema.default(["http://localhost:5173"]),
+  CORS_ORIGINS: corsOriginsSchema.default(["http://localhost:3000"]),
   DATABASE_URL: z.url().startsWith("postgresql://"),
   NODE_ENV: nodeEnvSchema,
-  PORT: z.coerce.number().int().positive().max(65535).default(3000),
+  PORT: z.coerce.number().int().positive().max(65535).default(5000),
   REDIS_URL: z.url().startsWith("redis://"),
   REFRESH_TOKEN_SECRET: z.string().min(32),
 });
 
 export const databaseEnvSchema = apiEnvSchema.pick({
   DATABASE_URL: true,
+});
+
+export const webEnvSchema = z.object({
+  VITE_API_URL: z.url().default("http://localhost:5000"),
 });

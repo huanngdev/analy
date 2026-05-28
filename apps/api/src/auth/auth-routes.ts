@@ -9,10 +9,8 @@ import {
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 
 import type { AppBindings } from "@/app-bindings";
-import { verifyAccessToken } from "@/auth/access-token";
 import {
   clearAuthCookies,
-  getAccessTokenCookie,
   getRefreshTokenCookie,
   setAuthCookies,
 } from "@/auth/auth-cookies";
@@ -24,6 +22,7 @@ import {
 } from "@/auth/auth-service";
 import { getAuthRequestContext, parseJsonBody } from "@/auth/request-context";
 import { revokeRefreshSession } from "@/auth/refresh-session-service";
+import { requireAuthMiddleware } from "@/middleware/require-auth";
 
 export const authRoutes = new OpenAPIHono<AppBindings>();
 
@@ -183,7 +182,9 @@ authRoutes.openapi(logoutRoute, async (c) => {
 authRoutes.openapi(rotateTokenRoute, async (c) => {
   const result = await rotateAuthTokens(getRefreshTokenCookie(c));
 
-  setAuthCookies(c, result.accessToken, result.refreshToken);
+  setAuthCookies(c, result.accessToken, result.refreshToken, {
+    refreshTokenMaxAge: result.refreshTokenMaxAge,
+  });
 
   return c.json(
     authSessionResponseSchema.parse({
@@ -194,9 +195,10 @@ authRoutes.openapi(rotateTokenRoute, async (c) => {
   );
 });
 
+authRoutes.use("/me", requireAuthMiddleware);
+
 authRoutes.openapi(meRoute, async (c) => {
-  const accessToken = getAccessTokenCookie(c);
-  const payload = await verifyAccessToken(accessToken ?? "");
+  const payload = c.get("auth");
   const user = await getAuthUser(payload.id);
 
   return c.json(

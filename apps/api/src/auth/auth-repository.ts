@@ -12,6 +12,20 @@ import { AppError } from "@/errors/app-error";
 
 type UserRecord = typeof users.$inferSelect;
 
+function generateNameFromEmail(email: string) {
+  const atIndex = email.indexOf("@");
+  const localPart = atIndex === -1 ? email : email.slice(0, atIndex);
+  const plusIndex = localPart.indexOf("+");
+  const baseName = plusIndex === -1 ? localPart : localPart.slice(0, plusIndex);
+  const name = baseName
+    .replace(/[._-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+
+  return (name || localPart).slice(0, 120);
+}
+
 function toAuthUser(user: UserRecord): AuthUser {
   return {
     avatarUrl: user.avatarUrl,
@@ -31,7 +45,7 @@ export async function createEmailPasswordUser(
   const createdUser = await db.transaction(async (tx) => {
     const userValues: NewUser = {
       email: input.email,
-      name: input.name ?? null,
+      name: generateNameFromEmail(input.email),
       passwordHash,
     };
 

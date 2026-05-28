@@ -13,6 +13,7 @@ import { requestLogger } from "@/logger";
 import { corsMiddleware } from "@/middleware/cors";
 import { errorHandler } from "@/middleware/error-handler";
 import { notFoundHandler } from "@/middleware/not-found";
+import { rateLimitMiddleware } from "@/middleware/rate-limit";
 import { requestIdMiddleware } from "@/middleware/request-id";
 import { securityMiddleware } from "@/middleware/security";
 
@@ -50,6 +51,7 @@ app.use("*", securityMiddleware);
 app.use("*", corsMiddleware);
 app.use("*", requestIdMiddleware);
 app.use("*", requestLogger);
+app.use("*", rateLimitMiddleware);
 
 registerApiDocs(app);
 

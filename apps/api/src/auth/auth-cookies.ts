@@ -34,6 +34,7 @@ export function setAuthCookies(
   c: Context,
   accessToken: string,
   refreshToken: string,
+  options: { refreshTokenMaxAge?: number } = {},
 ) {
   setCookie(
     c,
@@ -45,7 +46,7 @@ export function setAuthCookies(
     c,
     AUTH_COOKIE_NAMES.refreshToken,
     refreshToken,
-    cookieOptions(REFRESH_SESSION_TTL_SECONDS),
+    cookieOptions(options.refreshTokenMaxAge ?? REFRESH_SESSION_TTL_SECONDS),
   );
 }
 

@@ -80,6 +80,7 @@ export async function rotateAuthTokens(refreshCookie: string | undefined) {
   return {
     accessToken: await signAccessToken(user),
     refreshToken: rotatedSession.refreshToken,
+    refreshTokenMaxAge: rotatedSession.refreshTokenMaxAge,
     user,
   };
 }

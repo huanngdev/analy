@@ -11,7 +11,9 @@ let connectPromise: Promise<void> | undefined;
 
 export type RedisSessionClient = {
   del(key: string): Promise<number>;
+  expire(key: string, seconds: number): Promise<number | boolean>;
   get(key: string): Promise<string | null>;
+  incr(key: string): Promise<number>;
   ping(): Promise<string>;
   set(
     key: string,

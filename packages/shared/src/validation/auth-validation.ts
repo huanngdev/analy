@@ -11,11 +11,16 @@ export const authUserSchema = z.object({
   systemRole: z.enum(SYSTEM_ROLES),
 });
 
-export const authRegisterRequestSchema = z.object({
-  email: z.email().trim().toLowerCase(),
-  name: z.string().trim().min(1).max(120).optional(),
-  password: z.string().min(8).max(128),
-});
+export const authRegisterRequestSchema = z
+  .object({
+    confirmPassword: z.string().min(8).max(128),
+    email: z.email().trim().toLowerCase(),
+    password: z.string().min(8).max(128),
+  })
+  .refine((input) => input.password === input.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export const authLoginRequestSchema = z.object({
   email: z.email().trim().toLowerCase(),

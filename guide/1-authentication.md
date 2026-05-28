@@ -23,10 +23,10 @@ This guide is the source of truth for Analy authentication and the handoff docum
 
 ## Development URLs
 
-- API: `http://localhost:3000`
-- Scalar docs: `http://localhost:3000/docs`
-- Raw OpenAPI spec: `http://localhost:3000/openapi.json`
-- Web client: `http://localhost:5173`
+- Web client: `http://localhost:3000`
+- API: `http://localhost:5000`
+- Scalar docs: `http://localhost:5000/docs`
+- Raw OpenAPI spec: `http://localhost:5000/openapi.json`
 - Drizzle Studio: `https://local.drizzle.studio`
 
 ## Token Model
@@ -48,8 +48,8 @@ Use a two-token model with short-lived access tokens and long-lived refresh sess
 - `POST /auth/register`: validates email/password input, creates a user, creates an email provider account, creates a refresh session, sets auth cookies, and returns safe user data.
 - `POST /auth/login`: verifies email/password credentials, creates a refresh session, sets auth cookies, and returns safe user data.
 - `POST /auth/logout`: revokes the refresh session if a refresh cookie is present and clears both auth cookies.
-- `POST /auth/rotate-token`: validates and rotates the refresh session, signs a new access token, sets both cookies, and returns safe user data.
-- `GET /auth/me`: verifies the access token cookie, loads the user from PostgreSQL, and returns safe user data plus empty membership/organization/permission arrays.
+- `POST /auth/rotate-token`: validates and rotates the refresh token, signs a new access token, sets both cookies, preserves the original refresh-session expiry, and returns safe user data.
+- `GET /auth/me`: uses the authentication middleware to verify the access token cookie, loads the user from PostgreSQL, and returns safe user data plus empty membership/organization/permission arrays.
 
 ## Planned Endpoints
 
@@ -76,10 +76,10 @@ Validated by `packages/shared/src/validation/env-validation.ts` and parsed in `a
 - `REFRESH_TOKEN_SECRET`: minimum 32 characters.
 - `DATABASE_URL`: PostgreSQL connection URL.
 - `REDIS_URL`: Redis connection URL.
-- `CORS_ORIGINS`: comma-separated origin list, defaults to `http://localhost:5173`.
+- `CORS_ORIGINS`: comma-separated origin list, defaults to `http://localhost:3000`.
 - `AUTH_COOKIE_DOMAIN`: optional cookie domain.
 - `NODE_ENV`: `development`, `test`, or `production`, defaults to `development`.
-- `PORT`: API port, defaults to `3000`.
+- `PORT`: API port, defaults to `5000`.
 
 ## Database Model
 
@@ -123,6 +123,7 @@ Important rules:
 - `apps/api/src/middleware/request-id.ts`: request id context middleware.
 - `apps/api/src/middleware/cors.ts`: CORS using validated origins.
 - `apps/api/src/middleware/security.ts`: Hono secure headers middleware.
+- `apps/api/src/middleware/require-auth.ts`: access-token authentication middleware for protected routes.
 
 ### Shared Auth Files
 
@@ -161,17 +162,18 @@ Token rotation:
 1. Route reads refresh cookie.
 2. Refresh service parses `sessionId.refreshToken`.
 3. Redis session is loaded and token HMAC is compared with timing-safe comparison.
-4. A new refresh token and expiry are generated.
-5. Redis session and PostgreSQL audit row are updated.
+4. A new refresh token is generated while preserving the original refresh-session expiry.
+5. Redis session and PostgreSQL audit row are updated without extending the refresh-session lifetime.
 6. Service signs a new access token for the user.
 7. Route sets rotated cookies and returns safe user data.
 
 Current user:
 
-1. Route reads access token cookie.
+1. `requireAuthMiddleware` reads the access token cookie.
 2. `verifyAccessToken` validates JWT signature and payload.
-3. `getAuthUser` loads the user from PostgreSQL.
-4. Route returns user data and placeholder empty auth context arrays.
+3. The route reads the verified auth payload from Hono context.
+4. `getAuthUser` loads the user from PostgreSQL.
+5. Route returns user data and placeholder empty auth context arrays.
 
 ## Error Handling
 
@@ -186,8 +188,8 @@ Current user:
 - Store only safe UI auth hints in Zustand, never tokens.
 - Use TanStack Query for `/auth/me` and other server state.
 - On startup, hydrate safe persisted state first, then call `GET /auth/me`.
-- If `/auth/me` returns `401`, call `POST /auth/rotate-token` once and retry `/auth/me` once.
-- If rotation fails, clear safe auth state and redirect to login.
+- Axios intercepts protected-route `401` responses, calls `POST /auth/rotate-token`, and retries the original request up to 3 times.
+- If rotation fails or the retry limit is reached, clear safe auth state, clear cached queries, and redirect to login.
 
 ## Next Agent Session Notes
 

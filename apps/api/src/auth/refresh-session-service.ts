@@ -54,6 +54,10 @@ function createExpiresAt() {
   return new Date(Date.now() + REFRESH_SESSION_TTL_SECONDS * 1000);
 }
 
+function getRemainingSeconds(expiresAt: string) {
+  return Math.max(Math.ceil((Date.parse(expiresAt) - Date.now()) / 1000), 1);
+}
+
 function createCookieValue(sessionId: string, refreshToken: string) {
   return `${sessionId}.${refreshToken}`;
 }
@@ -89,7 +93,7 @@ async function saveRedisSession(session: RefreshSession) {
     redisSessionKey(session.sessionId),
     JSON.stringify(session),
     {
-      EX: REFRESH_SESSION_TTL_SECONDS,
+      EX: getRemainingSeconds(session.expiresAt),
     },
   );
 }
@@ -169,6 +173,14 @@ export async function rotateRefreshSession(refreshCookie: string | undefined) {
     });
   }
 
+  if (Date.parse(session.expiresAt) <= Date.now()) {
+    throw new AppError({
+      code: "UNAUTHORIZED",
+      message: "Authentication required",
+      status: 401,
+    });
+  }
+
   const refreshTokenHash = createRefreshTokenHash(
     parsedCookie.sessionId,
     parsedCookie.refreshToken,
@@ -183,10 +195,9 @@ export async function rotateRefreshSession(refreshCookie: string | undefined) {
   }
 
   const nextRefreshToken = createRefreshToken();
-  const expiresAt = createExpiresAt();
+  const expiresAt = new Date(session.expiresAt);
   const rotatedSession: RefreshSession = {
     ...session,
-    expiresAt: expiresAt.toISOString(),
     lastRotatedAt: new Date().toISOString(),
     tokenHash: createRefreshTokenHash(session.sessionId, nextRefreshToken),
   };
@@ -196,6 +207,7 @@ export async function rotateRefreshSession(refreshCookie: string | undefined) {
 
   return {
     refreshToken: createCookieValue(session.sessionId, nextRefreshToken),
+    refreshTokenMaxAge: getRemainingSeconds(session.expiresAt),
     userId: session.userId,
   };
 }

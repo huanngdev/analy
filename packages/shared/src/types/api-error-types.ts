@@ -4,6 +4,7 @@ export const API_ERROR_CODES = [
   "FORBIDDEN",
   "INTERNAL_SERVER_ERROR",
   "NOT_FOUND",
+  "RATE_LIMITED",
   "UNAUTHORIZED",
   "VALIDATION_ERROR",
 ] as const;
