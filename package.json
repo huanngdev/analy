@@ -9,7 +9,10 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "dev": "bunx turbo dev",
+    "dev": "bunx turbo --ui=tui dev --filter=web --filter=api --filter=@repo/shared",
+    "dev:stream": "bunx turbo --ui=stream dev --filter=web --filter=api --filter=@repo/shared",
+    "dev:web": "bunx turbo --ui=tui dev --filter=web",
+    "dev:api": "bunx turbo --ui=tui dev --filter=api",
     "build": "bunx turbo build",
     "typecheck": "bunx turbo typecheck",
     "lint": "bunx turbo lint",
