@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { Logo } from "@/components/logo";
 import { DotPattern } from "@/components/patterns/dot-pattern";
@@ -13,11 +13,22 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { RegisterForm } from "@/features/auth/components/register-form";
+import { useDocumentTitle } from "@/hooks/use-document-title";
+import { useAuthStore } from "@/stores/auth-store";
 
 export function AuthLayout() {
+  const auth = useAuthStore((state) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
   const activeTab = location.pathname === "/login" ? "login" : "register";
+
+  useDocumentTitle(
+    activeTab === "login" ? "Login | Analy" : "Register | Analy",
+  );
+
+  if (auth?.user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden p-6">
