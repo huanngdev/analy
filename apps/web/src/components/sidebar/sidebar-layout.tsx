@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarPageHeader } from "@/components/sidebar/sidebar-page-header";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 type SidebarLayoutProps = {
@@ -22,6 +23,7 @@ export function SidebarLayout({
 }: SidebarLayoutProps) {
   return (
     <SidebarProvider
+      className="h-dvh overflow-hidden"
       style={
         {
           "--header-height": "calc(var(--spacing) * 12)",
@@ -35,9 +37,11 @@ export function SidebarLayout({
         user={user}
         variant="inset"
       />
-      <SidebarInset>
+      <SidebarInset className="h-dvh overflow-hidden">
         <SidebarPageHeader title={title} />
-        {children}
+        <ScrollArea className="h-[calc(100dvh-var(--header-height))]">
+          {children}
+        </ScrollArea>
       </SidebarInset>
     </SidebarProvider>
   );

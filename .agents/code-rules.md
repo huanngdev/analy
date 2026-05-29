@@ -7,7 +7,7 @@ These rules apply to agent and developer changes in this repository. MUST FOLLOW
 - Write all Drizzle table schemas in `packages/shared`.
 - Write all shared TypeScript types in `packages/shared`.
 - Write all shared Zod schemas in `packages/shared`.
-- Do not duplicate DTOs, role names, permission names, or database schemas inside apps.
+- Do not duplicate DTOs, service type constants, provisioning constants, ownership rules, or database schemas inside apps.
 - Apps must import shared schemas and types from `@repo/shared`.
 
 ## Type Safety
@@ -21,7 +21,7 @@ These rules apply to agent and developer changes in this repository. MUST FOLLOW
 ## File Naming
 
 - Use `kebab-case` for all file names, matching `apps/web/src/components/ui`.
-- Examples: `button.tsx`, `alert-dialog.tsx`, `input-group.tsx`, `auth-service.ts`, `project-members.repository.ts`.
+- Examples: `button.tsx`, `alert-dialog.tsx`, `input-group.tsx`, `auth-service.ts`, `project-services.repository.ts`.
 - Do not use `PascalCase`, `camelCase`, `snake_case`, or spaces in file names.
 - React components should still export PascalCase component names from kebab-case files.
 - Keep directory names lowercase and prefer `kebab-case` for multi-word directories.
@@ -29,7 +29,7 @@ These rules apply to agent and developer changes in this repository. MUST FOLLOW
 ## Backend
 
 - Keep Hono handlers small.
-- Put reusable logic into focused services, repositories, auth helpers, and authorization helpers.
+- Put reusable logic into focused services, repositories, auth helpers, and ownership helpers.
 - Validate requests with shared Zod schemas.
 - Use Drizzle schemas from `@repo/shared` for database work.
 - Document every API endpoint with OpenAPI when creating or changing routes.
@@ -46,7 +46,7 @@ These rules apply to agent and developer changes in this repository. MUST FOLLOW
 
 ## Backend Tests
 
-- Add tests when creating or changing functions, services, repositories, endpoints, middleware, or permission-sensitive logic.
+- Add tests when creating or changing functions, services, repositories, endpoints, middleware, or ownership-sensitive logic.
 - Cover success, validation failure, unauthorized/forbidden access when relevant, missing resources, edge cases, and unexpected dependency failures.
 - Test endpoint status codes and response bodies, not only implementation details.
 - Test reusable functions directly and endpoint behavior through the HTTP layer when practical.
@@ -55,7 +55,7 @@ These rules apply to agent and developer changes in this repository. MUST FOLLOW
 ## Frontend
 
 - Split UI and logic.
-- Do not put API calls, data mapping, auth refresh, permission logic, or business logic directly inside React components.
+- Do not put API calls, data mapping, auth refresh, ownership logic, or business logic directly inside React components.
 - Put query/mutation logic in hooks.
 - Put local UI state in Zustand stores.
 - Put HTTP clients and interceptors in `lib`.

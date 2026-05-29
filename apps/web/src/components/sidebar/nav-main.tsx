@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { InboxIcon, PlusCircleIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +22,8 @@ type NavMainProps = {
 };
 
 export function NavMain({ items }: NavMainProps) {
+  const { pathname } = useLocation();
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -47,8 +49,17 @@ export function NavMain({ items }: NavMainProps) {
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <Link to={item.href}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActivePath(pathname, item.href)}
+                tooltip={item.title}
+              >
+                <Link
+                  to={item.href}
+                  aria-current={
+                    isActivePath(pathname, item.href) ? "page" : undefined
+                  }
+                >
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </Link>
@@ -59,4 +70,12 @@ export function NavMain({ items }: NavMainProps) {
       </SidebarGroupContent>
     </SidebarGroup>
   );
+}
+
+function isActivePath(pathname: string, href: string) {
+  if (href === "/dashboard") {
+    return pathname === href;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
 }

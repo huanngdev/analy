@@ -1,18 +1,21 @@
 import type { AuthUser } from "@repo/shared";
+import {
+  SiClickhouse,
+  SiMinio,
+  SiPostgresql,
+  SiRabbitmq,
+  SiRedis,
+} from "@icons-pack/react-simple-icons";
 import type { ComponentProps } from "react";
 import {
   ActivityIcon,
-  BarChart3Icon,
-  Building2Icon,
   CircleHelpIcon,
-  ClipboardListIcon,
-  FilesIcon,
-  FolderKanbanIcon,
+  CreditCardIcon,
+  KeyRoundIcon,
   LayoutDashboardIcon,
-  LinkIcon,
   SearchIcon,
+  ServerIcon,
   SettingsIcon,
-  UsersRoundIcon,
 } from "lucide-react";
 
 import { AppSidebarBrand } from "@/components/sidebar/app-sidebar-brand";
@@ -37,62 +40,67 @@ const sidebarData = {
       icon: LayoutDashboardIcon,
     },
     {
-      title: "Organizations",
-      href: "/dashboard",
-      icon: Building2Icon,
+      title: "Services",
+      href: "/dashboard/services",
+      icon: ServerIcon,
     },
     {
-      title: "Projects",
-      href: "/dashboard",
-      icon: FolderKanbanIcon,
+      title: "Credentials",
+      href: "/dashboard/credentials",
+      icon: KeyRoundIcon,
     },
     {
-      title: "Analytics",
-      href: "/dashboard",
-      icon: BarChart3Icon,
+      title: "Usage",
+      href: "/dashboard/usage",
+      icon: ActivityIcon,
     },
     {
-      title: "Team",
-      href: "/dashboard",
-      icon: UsersRoundIcon,
+      title: "Billing",
+      href: "/dashboard/billing",
+      icon: CreditCardIcon,
     },
   ],
   resources: [
     {
-      name: "Links",
-      href: "/dashboard",
-      icon: LinkIcon,
+      name: "PostgreSQL",
+      href: "/dashboard/services/postgresql",
+      icon: SiPostgresql,
     },
     {
-      name: "Forms",
-      href: "/dashboard",
-      icon: ClipboardListIcon,
+      name: "Redis",
+      href: "/dashboard/services/redis",
+      icon: SiRedis,
     },
     {
-      name: "Events",
-      href: "/dashboard",
-      icon: ActivityIcon,
+      name: "ClickHouse",
+      href: "/dashboard/services/clickhouse",
+      icon: SiClickhouse,
     },
     {
-      name: "Files",
-      href: "/dashboard",
-      icon: FilesIcon,
+      name: "Object Storage",
+      href: "/dashboard/services/object-storage",
+      icon: SiMinio,
+    },
+    {
+      name: "Queues",
+      href: "/dashboard/services/queues",
+      icon: SiRabbitmq,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      href: "/dashboard",
+      href: "/dashboard/settings",
       icon: SettingsIcon,
     },
     {
       title: "Get Help",
-      href: "/dashboard",
+      href: "/dashboard/help",
       icon: CircleHelpIcon,
     },
     {
       title: "Search",
-      href: "/dashboard",
+      href: "/dashboard/search",
       icon: SearchIcon,
     },
   ],

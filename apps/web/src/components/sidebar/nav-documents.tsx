@@ -1,11 +1,12 @@
-import type { LucideIcon } from "lucide-react";
+import type { ElementType } from "react";
 import {
   EllipsisIcon,
   FolderOpenIcon,
-  Share2Icon,
+  GaugeIcon,
+  KeyRoundIcon,
   Trash2Icon,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import {
   DropdownMenu,
@@ -26,7 +27,7 @@ import { useSidebar } from "@/components/ui/sidebar-context";
 
 type NavDocumentItem = {
   href: string;
-  icon: LucideIcon;
+  icon: ElementType;
   name: string;
 };
 
@@ -35,16 +36,25 @@ type NavDocumentsProps = {
 };
 
 export function NavDocuments({ items }: NavDocumentsProps) {
+  const { pathname } = useLocation();
   const { isMobile } = useSidebar();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Resources</SidebarGroupLabel>
+      <SidebarGroupLabel>Services</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <Link to={item.href}>
+            <SidebarMenuButton
+              asChild
+              isActive={isActivePath(pathname, item.href)}
+            >
+              <Link
+                to={item.href}
+                aria-current={
+                  isActivePath(pathname, item.href) ? "page" : undefined
+                }
+              >
                 <item.icon />
                 <span>{item.name}</span>
               </Link>
@@ -69,8 +79,12 @@ export function NavDocuments({ items }: NavDocumentsProps) {
                   <span>Open</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Share2Icon />
-                  <span>Share</span>
+                  <GaugeIcon />
+                  <span>Metrics</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <KeyRoundIcon />
+                  <span>Credentials</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">
@@ -81,13 +95,11 @@ export function NavDocuments({ items }: NavDocumentsProps) {
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <EllipsisIcon className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   );
+}
+
+function isActivePath(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
 }

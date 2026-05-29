@@ -55,7 +55,8 @@ export function AuthLayout() {
                     Create your account
                   </CardTitle>
                   <CardDescription>
-                    Start a workspace with secure email and password access.
+                    Start provisioning databases and backend services from one
+                    dashboard.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -66,7 +67,8 @@ export function AuthLayout() {
                 <CardHeader className="gap-2 text-left">
                   <CardTitle className="text-2xl">Welcome back</CardTitle>
                   <CardDescription>
-                    Sign in to continue managing your analytics workspace.
+                    Sign in to manage your projects, services, credentials, and
+                    infrastructure usage.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

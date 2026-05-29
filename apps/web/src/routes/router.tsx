@@ -30,7 +30,7 @@ const router = createBrowserRouter([
   {
     element: <DashboardPage />,
     errorElement: <ErrorScreen />,
-    path: "/dashboard",
+    path: "/dashboard/*",
   },
   {
     element: <ErrorScreen title="Page not found" />,

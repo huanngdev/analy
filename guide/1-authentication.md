@@ -7,10 +7,10 @@ This guide is the source of truth for Analy authentication and the handoff docum
 - Email/password authentication is implemented in `apps/api/src/auth`.
 - Access tokens are JWTs signed with `jose` and stored in an `HttpOnly` cookie.
 - Refresh sessions are active in Redis and audited in PostgreSQL.
-- Auth request/response schemas, auth-facing types, role/provider constants, cookie names, and token TTLs live in `packages/shared`.
+- Auth request/response schemas, auth-facing types, provider constants, cookie names, and token TTLs live in `packages/shared`.
 - API docs use OpenAPI 3.1 with Scalar in development only.
 - GitHub and Google OAuth are implemented with `arctic`; OAuth accounts reuse `user_accounts` and create a user automatically when no matching user exists.
-- Organization/project memberships and permissions are not returned yet; `/auth/me` currently returns empty arrays for memberships, organizations, and permissions.
+- `/auth/me` returns the authenticated user's safe profile data only, with no collaboration-scoped auth context.
 
 ## Runtime Infrastructure
 
@@ -49,7 +49,7 @@ Use a two-token model with short-lived access tokens and long-lived refresh sess
 - `POST /auth/login`: verifies email/password credentials, creates a refresh session, sets auth cookies, and returns safe user data.
 - `POST /auth/logout`: revokes the refresh session if a refresh cookie is present and clears both auth cookies.
 - `POST /auth/rotate-token`: validates and rotates the refresh token, signs a new access token, sets both cookies, preserves the original refresh-session expiry, and returns safe user data.
-- `GET /auth/me`: uses the authentication middleware to verify the access token cookie, loads the user from PostgreSQL, and returns safe user data plus empty membership/organization/permission arrays.
+- `GET /auth/me`: uses the authentication middleware to verify the access token cookie, loads the user from PostgreSQL, and returns safe user data.
 - `GET /auth/github`: start GitHub OAuth.
 - `GET /auth/github/callback`: complete GitHub OAuth.
 - `GET /auth/google`: start Google OAuth.
@@ -57,7 +57,7 @@ Use a two-token model with short-lived access tokens and long-lived refresh sess
 
 ## Planned Endpoints
 
-- Future organization/project permission endpoints must authorize from PostgreSQL memberships and roles, not JWT claims alone.
+- Future project, service, credential, backup, metric, usage, billing, and provisioning endpoints must scope protected reads and writes by the authenticated user's `userId`, not JWT claims or resource ids alone.
 
 ## API Docs Rules
 
@@ -91,16 +91,16 @@ Validated by `packages/shared/src/validation/env-validation.ts` and parsed in `a
 
 Defined in `packages/shared/src/db/schema/auth-schema.ts`.
 
-- `users`: canonical user profile, password hash, email verification flag, system role, timestamps.
+- `users`: canonical user profile, password hash, email verification flag, timestamps.
 - `user_accounts`: login identities for `email`, `github`, and `google`, linked to one user.
 - `refresh_sessions`: PostgreSQL audit record for refresh sessions. Redis remains the active session store.
 
 Important rules:
 
 - Keep Drizzle schemas in `packages/shared`.
-- Keep PostgreSQL as the source of truth for users and future permissions.
+- Keep PostgreSQL as the source of truth for users, projects, provisioned services, credentials metadata, backups metadata, and usage records.
 - Keep Redis limited to active refresh sessions, cache, rate limits, and short-lived coordination.
-- Do not authorize organization/project access from resource ids alone.
+- Do not authorize project, service, credential, backup, or usage access from resource ids alone; always scope by authenticated user ownership.
 
 ## File Structure
 
@@ -134,7 +134,7 @@ Important rules:
 
 ### Shared Auth Files
 
-- `packages/shared/src/constants/auth-constants.ts`: system roles, auth providers, token TTLs, and cookie names.
+- `packages/shared/src/constants/auth-constants.ts`: auth providers, token TTLs, and cookie names.
 - `packages/shared/src/db/schema/auth-schema.ts`: Drizzle auth tables and enums.
 - `packages/shared/src/validation/auth-validation.ts`: auth request/response Zod schemas.
 - `packages/shared/src/validation/api-validation.ts`: shared API root/error response schemas.
@@ -188,7 +188,7 @@ Current user:
 2. `verifyAccessToken` validates JWT signature and payload.
 3. The route reads the verified auth payload from Hono context.
 4. `getAuthUser` loads the user from PostgreSQL.
-5. Route returns user data and placeholder empty auth context arrays.
+5. Route returns safe user data.
 
 ## Error Handling
 
@@ -214,8 +214,8 @@ Current user:
 - When adding a route, update OpenAPI metadata in the same route file.
 - When changing auth request/response shape, update shared Zod schemas first, then inferred types, then route/service usage.
 - OAuth reuses `user_accounts` and avoids provider-specific columns on `users`.
-- When implementing organizations/projects in `/auth/me`, load memberships/permissions from PostgreSQL and scope checks by organization/project.
-- Add backend tests before expanding permission-sensitive behavior.
+- Keep `/auth/me` focused on the authenticated user; do not add collaboration-scoped auth context payloads.
+- Add backend tests before expanding ownership-sensitive behavior.
 
 ## Recommended Libraries
 

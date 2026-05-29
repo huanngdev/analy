@@ -35,7 +35,7 @@ export function useRegister() {
     onSuccess: (auth) => {
       setAuth(auth);
       toast.success("Account created", {
-        description: "Your workspace is ready.",
+        description: "Your infrastructure dashboard is ready.",
       });
       void navigate("/dashboard", { replace: true });
     },

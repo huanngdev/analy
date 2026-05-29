@@ -1,19 +1,28 @@
 # Analy
 
-Analy is an open-source workspace and analytics platform built as a modern TypeScript monorepo. It is designed for teams that need one product surface to manage organizations, projects, members, permissions, links, forms, events, uploaded files, and analytics.
+Analy is an open-source unified database cloud built as a modern TypeScript monorepo. It is designed for developers who need one product surface to provision, manage, monitor, and access backend infrastructure without learning complex DevOps tooling.
 
 This repository is also maintained as a portfolio project for my CV. It demonstrates full-stack product engineering with a typed API, shared validation contracts, authentication, local infrastructure, and a scalable monorepo architecture.
 
 ## What Analy Does
 
-Analy provides the foundation for a multi-tenant analytics workspace:
+Analy provides the foundation for a developer infrastructure platform:
 
 - Create user accounts and sign in with email/password, GitHub, or Google.
 - Manage authenticated sessions with secure cookies, short-lived access tokens, and refresh token rotation.
-- Organize future product data around organizations and projects.
-- Prepare for analytics-oriented resources such as links, forms, events, and files.
+- Organize infrastructure into projects owned by the authenticated user.
+- Provision and manage PostgreSQL and Redis services from one dashboard.
+- Prepare for ClickHouse, object storage, message queues, monitoring, backups, and usage-based billing.
 - Share database schemas, API validation, constants, and types across the frontend and backend.
 - Run a local development stack with PostgreSQL, Redis, ClickHouse, and MinIO.
+
+## Product Vision
+
+Analy aims to become the simplest way for developers, indie hackers, startups, small teams, freelancers, and students to get production-ready backend infrastructure from one place.
+
+Developers should not need separate accounts, billing systems, dashboards, APIs, and deployment workflows for each database or infrastructure service. Analy should provide a consistent control panel for databases, caches, analytics engines, storage, queues, usage metrics, backups, and credentials.
+
+The product goal is to hide infrastructure complexity so users can focus on building products.
 
 ## Current Features
 
@@ -28,6 +37,18 @@ Analy provides the foundation for a multi-tenant analytics workspace:
 - Centralized validation for API and web environment variables.
 - Docker Compose infrastructure for local development services.
 - Turbo-powered workspace scripts for development, builds, linting, and typechecking.
+
+## Planned Product Features
+
+- Instant provisioning for PostgreSQL and Redis.
+- Project management for grouping databases, caches, analytics services, storage, and queues.
+- Unified credentials for connection strings, password rotation, access key regeneration, and revocation.
+- Resource monitoring for CPU, memory, storage, and network activity.
+- Automated backups with scheduled backups, retention policies, one-click restore, and disaster recovery support.
+- Usage transparency for consumed resources, plan limits, and predictable pricing.
+- Future ClickHouse support for analytics and event tracking.
+- Future object storage support for images, videos, documents, and application assets.
+- Future message queues for background jobs, scheduled work, and event-driven systems.
 
 ## Tech Stack
 
@@ -170,17 +191,20 @@ By default:
 
 Analy keeps cross-app contracts in `packages/shared` so the frontend and backend use the same source of truth for database models, request validation, response validation, constants, and TypeScript types.
 
-The backend keeps authentication and API concerns close to the operation being protected, while the frontend keeps API access, auth state, and UI composition separated. This keeps the codebase ready for organization/project permissions, analytics resources, and dashboard features as the product grows.
+The backend keeps authentication and user ownership checks close to the operation being protected, while the frontend keeps API access, auth state, and UI composition separated. This keeps the codebase ready for projects, provisioned services, credentials, monitoring, backups, usage reporting, and billing features as the product grows.
 
 ## Roadmap
 
-- Organization and project management
-- Team invitations and role-based access control
-- Link management and tracking
-- Form builder and submissions
-- Event ingestion and analytics dashboards
-- File uploads with MinIO-backed object storage
-- Permission boundary tests and production deployment guides
+- Project management
+- PostgreSQL provisioning and connection management
+- Redis provisioning and connection management
+- Unified credentials and secret rotation
+- Resource monitoring and usage dashboards
+- Automated backups and restores
+- ClickHouse analytics service support
+- Object storage service support
+- Message queue service support
+- Ownership boundary tests and production deployment guides
 
 ## License
 
