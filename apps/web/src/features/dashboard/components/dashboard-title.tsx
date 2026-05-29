@@ -14,11 +14,11 @@ export function DashboardTitle({
   return (
     <section className="flex flex-col gap-6">
       <div className="max-w-3xl">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+        <h2 className="text-xl font-bold tracking-tight md:text-2xl">
           {title}
         </h2>
         {description ? (
-          <p className="text-muted-foreground mt-3 text-base leading-7">
+          <p className="text-muted-foreground text-sm leading-7 italic">
             {description}
           </p>
         ) : null}

@@ -10,7 +10,6 @@ import type { ComponentProps } from "react";
 import {
   ActivityIcon,
   CircleHelpIcon,
-  CreditCardIcon,
   KeyRoundIcon,
   LayoutDashboardIcon,
   SearchIcon,
@@ -53,11 +52,6 @@ const sidebarData = {
       title: "Usage",
       href: "/dashboard/usage",
       icon: ActivityIcon,
-    },
-    {
-      title: "Billing",
-      href: "/dashboard/billing",
-      icon: CreditCardIcon,
     },
   ],
   resources: [
