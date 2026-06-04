@@ -16,6 +16,7 @@ import { notFoundHandler } from "@/middleware/not-found";
 import { rateLimitMiddleware } from "@/middleware/rate-limit";
 import { requestIdMiddleware } from "@/middleware/request-id";
 import { securityMiddleware } from "@/middleware/security";
+import { postgresRoutes } from "@/postgres/postgres-routes";
 
 const app = new OpenAPIHono<AppBindings>();
 
@@ -70,6 +71,7 @@ app.openapi(healthRoute, (c) => {
 });
 
 app.route("/auth", authRoutes);
+app.route("/postgres", postgresRoutes);
 
 app.onError(errorHandler);
 app.notFound(notFoundHandler);

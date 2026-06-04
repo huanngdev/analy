@@ -8,12 +8,9 @@ import {
 } from "@icons-pack/react-simple-icons";
 import type { ComponentProps } from "react";
 import {
-  ActivityIcon,
   CircleHelpIcon,
-  KeyRoundIcon,
   LayoutDashboardIcon,
   SearchIcon,
-  ServerIcon,
   SettingsIcon,
 } from "lucide-react";
 
@@ -37,21 +34,6 @@ const sidebarData = {
       title: "Dashboard",
       href: "/dashboard",
       icon: LayoutDashboardIcon,
-    },
-    {
-      title: "Services",
-      href: "/dashboard/services",
-      icon: ServerIcon,
-    },
-    {
-      title: "Credentials",
-      href: "/dashboard/credentials",
-      icon: KeyRoundIcon,
-    },
-    {
-      title: "Usage",
-      href: "/dashboard/usage",
-      icon: ActivityIcon,
     },
   ],
   resources: [
