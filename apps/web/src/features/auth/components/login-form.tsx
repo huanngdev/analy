@@ -9,6 +9,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { PlusIcon } from "@/components/ui/plus";
 import { Spinner } from "@/components/ui/spinner";
 import { useLogin } from "@/features/auth/hooks/use-login";
 import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
@@ -49,7 +50,7 @@ export function LoginForm() {
         </Field>
       </FieldGroup>
       <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading && <Spinner data-icon="inline-start" />}
+        {isLoading ? <Spinner data-icon="inline-start" /> : <PlusIcon />}
         Sign in
       </Button>
       <OAuthButtons />

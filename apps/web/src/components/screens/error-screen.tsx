@@ -1,3 +1,4 @@
+import { PageTitle } from "@/components/typography/page-title";
 import { Button } from "@/components/ui/button";
 
 type ErrorScreenProps = {
@@ -21,7 +22,7 @@ export function ErrorScreen({
         <p className="text-muted-foreground text-sm font-medium tracking-[0.25em] uppercase">
           Analy
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+        <PageTitle>{title}</PageTitle>
         <p className="text-muted-foreground">{description}</p>
         {onAction ? (
           <Button type="button" onClick={onAction}>

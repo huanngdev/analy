@@ -1,8 +1,8 @@
 import type { MiddlewareHandler } from "hono";
 
-import type { AppBindings } from "@/app-bindings";
-import { verifyAccessToken } from "@/auth/access-token";
-import { getAccessTokenCookie } from "@/auth/auth-cookies";
+import type { AppBindings } from "@/server/app-bindings";
+import { verifyAccessToken } from "@/features/auth/access-token";
+import { getAccessTokenCookie } from "@/features/auth/auth-cookies";
 
 export const requireAuthMiddleware: MiddlewareHandler<AppBindings> = async (
   c,

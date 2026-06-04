@@ -1,39 +1,38 @@
+import { PageTitle } from "@/components/typography/page-title";
+import { Separator } from "@/components/ui/separator";
 import type { ReactNode } from "react";
 
 type DashboardTitleProps = {
+  actions?: ReactNode;
   children?: ReactNode;
   description?: string;
-  logo?: ReactNode;
   title: string;
 };
 
 export function DashboardTitle({
+  actions,
   children,
   description,
-  logo,
   title,
 }: DashboardTitleProps) {
   return (
     <section className="flex flex-col gap-6">
-      <div className="flex max-w-3xl items-center gap-3">
-        <div>
-          <div className="flex items-center gap-1">
-            <h2 className="text-xl font-bold tracking-tight md:text-2xl">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex max-w-3xl items-center gap-3">
+          <div>
+            <PageTitle as="h2" size="compact">
               {title}
-            </h2>
-            {logo ? (
-              <div className="text-primary flex size-6 shrink-0 items-center justify-center [&_svg]:size-full">
-                {logo}
-              </div>
+            </PageTitle>
+            {description ? (
+              <p className="text-muted-foreground text-sm leading-7 italic">
+                {description}
+              </p>
             ) : null}
           </div>
-          {description ? (
-            <p className="text-muted-foreground text-sm leading-7 italic">
-              {description}
-            </p>
-          ) : null}
         </div>
+        {actions ? <div>{actions}</div> : null}
       </div>
+      <Separator className="w-[calc(100%+2rem)] -translate-x-4 lg:w-[calc(100%+3rem)] lg:-translate-x-6" />
       {children}
     </section>
   );

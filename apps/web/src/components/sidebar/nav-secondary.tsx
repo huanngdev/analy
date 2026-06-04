@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { activeSidebarMenuButtonClassName } from "@/components/sidebar/sidebar-nav-styles";
 
 type NavSecondaryItem = {
   href: string;
@@ -31,6 +32,7 @@ export function NavSecondary({ items, ...props }: NavSecondaryProps) {
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
+                className={activeSidebarMenuButtonClassName}
                 isActive={isActivePath(pathname, item.href)}
               >
                 <Link

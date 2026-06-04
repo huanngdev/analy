@@ -68,11 +68,9 @@ export function SidebarLayout({
           user={user}
           variant="inset"
         />
-        <SidebarInset className="h-dvh overflow-hidden">
+        <SidebarInset className="min-h-0 overflow-hidden">
           <SidebarPageHeader breadcrumbs={currentBreadcrumbs} title={title} />
-          <ScrollArea className="h-[calc(100dvh-var(--header-height))]">
-            {children}
-          </ScrollArea>
+          <ScrollArea className="min-h-0 flex-1">{children}</ScrollArea>
         </SidebarInset>
       </SidebarProvider>
     </SidebarLayoutContext.Provider>

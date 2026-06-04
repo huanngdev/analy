@@ -13,16 +13,7 @@ export function LogoMark({ className }: LogoMarkProps) {
       )}
       aria-hidden="true"
     >
-      <img
-        src="/logo-dark.svg"
-        alt=""
-        className="block size-full object-contain dark:hidden"
-      />
-      <img
-        src="/logo-white.svg"
-        alt=""
-        className="hidden size-full object-contain dark:block"
-      />
+      <img src="/logo.svg" alt="" className="dark size-full object-contain" />
     </span>
   );
 }
@@ -33,7 +24,7 @@ type LogoProps = {
 
 export function Logo({ className }: LogoProps) {
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
+    <span className={cn("inline-flex items-center gap-0", className)}>
       <LogoMark />
       <span className="text-foreground text-sm font-semibold tracking-[0.28em] uppercase">
         Analy

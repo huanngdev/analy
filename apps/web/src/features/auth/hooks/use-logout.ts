@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { logout } from "@/axios/auth";
-import { getApiErrorMessage } from "@/axios";
+import { logout } from "@/features/auth/api/auth-api";
+import { getApiErrorMessage } from "@/lib/api-client";
 import { useAuthStore } from "@/stores/auth-store";
 
 export function useLogout() {

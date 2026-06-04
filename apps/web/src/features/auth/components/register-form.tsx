@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { UserRoundPlusIcon } from "@/components/ui/user-round-plus";
 import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
 import { useRegister } from "@/features/auth/hooks/use-register";
 
@@ -65,7 +66,11 @@ export function RegisterForm() {
         </Field>
       </FieldGroup>
       <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading && <Spinner data-icon="inline-start" />}
+        {isLoading ? (
+          <Spinner data-icon="inline-start" />
+        ) : (
+          <UserRoundPlusIcon />
+        )}
         Create account
       </Button>
       <OAuthButtons />

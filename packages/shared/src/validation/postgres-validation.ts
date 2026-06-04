@@ -49,6 +49,10 @@ export const postgresCreateRequestSchema = z.object({
   ),
 });
 
+export const postgresListQuerySchema = z.object({
+  search: z.string().trim().max(100).optional(),
+});
+
 export const postgresProjectSchema = z.object({
   id: z.uuid(),
   name: z.string(),
@@ -88,8 +92,20 @@ export const postgresInstanceSchema = z.object({
   }),
 });
 
+export const postgresListItemSchema = z.object({
+  createdAt: z.iso.datetime(),
+  description: z.string().nullable(),
+  healthStatus: z.string(),
+  id: z.uuid(),
+  name: z.string(),
+  postgresVersion: z.enum(POSTGRES_VERSIONS),
+  project: postgresProjectSchema,
+  status: z.enum(SERVICE_STATUSES),
+  updatedAt: z.iso.datetime(),
+});
+
 export const postgresListResponseSchema = z.object({
-  instances: z.array(postgresInstanceSchema),
+  instances: z.array(postgresListItemSchema),
   ok: z.literal(true),
 });
 

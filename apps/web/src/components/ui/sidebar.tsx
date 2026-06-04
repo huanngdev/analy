@@ -245,6 +245,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon-sm"
+      hoverMotion={false}
       className={cn(className)}
       onClick={(event) => {
         onClick?.(event);

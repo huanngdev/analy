@@ -1,0 +1,115 @@
+import type { AuthLoginRequest, AuthRegisterRequest } from "@repo/shared";
+
+import { signAccessToken } from "@/features/auth/access-token";
+import {
+  createEmailPasswordUser,
+  findOrCreateOAuthUser,
+  findAuthUserById,
+  findUserRecordByEmail,
+  mapUserRecordToAuthUser,
+} from "@/features/auth/auth-repository";
+import type { OAuthUserProfile } from "@/features/auth/oauth-service";
+import { hashPassword, verifyPassword } from "@/features/auth/password";
+import type { AuthRequestContext } from "@/features/auth/request-context";
+import {
+  createRefreshSession,
+  rotateRefreshSession,
+} from "@/features/auth/refresh-session-service";
+import { AppError } from "@/lib/errors/app-error";
+
+function invalidCredentialsError() {
+  return new AppError({
+    code: "UNAUTHORIZED",
+    message: "Invalid email or password",
+    status: 401,
+  });
+}
+
+export async function registerWithEmailPassword(
+  input: AuthRegisterRequest,
+  context: AuthRequestContext,
+) {
+  const passwordHash = await hashPassword(input.password);
+  const user = await createEmailPasswordUser(input, passwordHash);
+  const [accessToken, refreshToken] = await Promise.all([
+    signAccessToken(user),
+    createRefreshSession(user.id, context),
+  ]);
+
+  return { accessToken, refreshToken, user };
+}
+
+export async function loginWithEmailPassword(
+  input: AuthLoginRequest,
+  context: AuthRequestContext,
+) {
+  const userRecord = await findUserRecordByEmail(input.email);
+
+  if (!userRecord?.passwordHash) {
+    throw invalidCredentialsError();
+  }
+
+  const validPassword = await verifyPassword(
+    userRecord.passwordHash,
+    input.password,
+  );
+
+  if (!validPassword) {
+    throw invalidCredentialsError();
+  }
+
+  const user = mapUserRecordToAuthUser(userRecord);
+  const [accessToken, refreshToken] = await Promise.all([
+    signAccessToken(user),
+    createRefreshSession(user.id, context),
+  ]);
+
+  return { accessToken, refreshToken, user };
+}
+
+export async function loginWithOAuth(
+  input: OAuthUserProfile,
+  context: AuthRequestContext,
+) {
+  const user = await findOrCreateOAuthUser(input);
+  const [accessToken, refreshToken] = await Promise.all([
+    signAccessToken(user),
+    createRefreshSession(user.id, context),
+  ]);
+
+  return { accessToken, refreshToken, user };
+}
+
+export async function rotateAuthTokens(refreshCookie: string | undefined) {
+  const rotatedSession = await rotateRefreshSession(refreshCookie);
+  const user = await findAuthUserById(rotatedSession.userId);
+
+  if (!user) {
+    throw new AppError({
+      code: "UNAUTHORIZED",
+      message: "Authentication required",
+      status: 401,
+    });
+  }
+
+  return {
+    accessToken: await signAccessToken(user),
+    refreshToken: rotatedSession.refreshToken,
+    refreshTokenMaxAge: rotatedSession.refreshTokenMaxAge,
+    user,
+  };
+}
+
+export async function getAuthUser(userId: string) {
+  const user = await findAuthUserById(userId);
+
+  if (!user) {
+    throw new AppError({
+      code: "UNAUTHORIZED",
+      message: "Authentication required",
+      status: 401,
+    });
+  }
+
+  return user;
+}

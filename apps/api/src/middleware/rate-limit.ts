@@ -1,8 +1,8 @@
 import type { ApiErrorResponse } from "@repo/shared";
 import type { MiddlewareHandler } from "hono";
 
-import type { AppBindings } from "@/app-bindings";
-import { getRedisClient } from "@/redis";
+import type { AppBindings } from "@/server/app-bindings";
+import { getRedisClient } from "@/lib/redis";
 
 const RATE_LIMIT_MAX_REQUESTS = 10;
 const RATE_LIMIT_WINDOW_SECONDS = 1;

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 
-import { getApiErrorMessage } from "@/axios";
-import { getHealth } from "@/axios/health";
+import { getApiErrorMessage } from "@/lib/api-client";
+import { getHealth } from "@/features/health/api/health-api";
 import { ErrorScreen } from "@/components/screens/error-screen";
 import { LoadingScreen } from "@/components/screens/loading-screen";
 

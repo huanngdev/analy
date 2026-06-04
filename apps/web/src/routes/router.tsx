@@ -1,11 +1,23 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  Navigate,
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 
 import { ErrorScreen } from "@/components/screens/error-screen";
-import { AuthLayout } from "@/features/auth/components/auth-layout";
-import { DashboardPage } from "@/pages/dashboard-page";
-import { HomePage } from "@/pages/home-page";
-import { LoginPage } from "@/pages/login-page";
-import { RegisterPage } from "@/pages/register-page";
+import { AuthPage } from "@/features/auth/pages/auth-page";
+import { dashboardPlaceholderRoutes } from "@/features/dashboard/constants/dashboard-routes";
+import { DashboardIndexPage } from "@/features/dashboard/pages/dashboard-index-page";
+import { DashboardLayoutPage } from "@/features/dashboard/pages/dashboard-layout-page";
+import { DashboardPlaceholderPage } from "@/features/dashboard/pages/dashboard-placeholder-page";
+import {
+  DesignSystemPage,
+  DesignSystemRedirectPage,
+} from "@/features/design-system/pages/design-system-page";
+import { HomePage } from "@/features/home/pages/home-page";
+import { PostgresCreatePage } from "@/features/postgres/pages/postgres-create-page";
+import { PostgresDetailPage } from "@/features/postgres/pages/postgres-detail-page";
+import { PostgresListPage } from "@/features/postgres/pages/postgres-list-page";
 
 const router = createBrowserRouter([
   {
@@ -14,23 +26,60 @@ const router = createBrowserRouter([
     path: "/",
   },
   {
-    element: <AuthLayout />,
+    element: <AuthPage />,
     errorElement: <ErrorScreen />,
-    children: [
-      {
-        element: <RegisterPage />,
-        path: "/register",
-      },
-      {
-        element: <LoginPage />,
-        path: "/login",
-      },
-    ],
+    path: "/register",
   },
   {
-    element: <DashboardPage />,
+    element: <AuthPage />,
     errorElement: <ErrorScreen />,
-    path: "/dashboard/*",
+    path: "/login",
+  },
+  {
+    element: <DesignSystemPage />,
+    errorElement: <ErrorScreen />,
+    path: "/design-system",
+  },
+  {
+    element: <DesignSystemRedirectPage />,
+    errorElement: <ErrorScreen />,
+    path: "/design system",
+  },
+  {
+    element: <DesignSystemRedirectPage />,
+    errorElement: <ErrorScreen />,
+    path: "/design%20system",
+  },
+  {
+    element: <DashboardLayoutPage />,
+    errorElement: <ErrorScreen />,
+    path: "/dashboard",
+    children: [
+      {
+        index: true,
+        element: <DashboardIndexPage />,
+      },
+      {
+        element: <PostgresListPage />,
+        path: "services/postgresql",
+      },
+      {
+        element: <PostgresCreatePage />,
+        path: "services/postgresql/new",
+      },
+      {
+        element: <PostgresDetailPage />,
+        path: "services/postgresql/:serviceId",
+      },
+      ...dashboardPlaceholderRoutes.map((route) => ({
+        element: <DashboardPlaceholderPage title={route.label} />,
+        path: route.path,
+      })),
+      {
+        element: <Navigate to="/dashboard" replace />,
+        path: "*",
+      },
+    ],
   },
   {
     element: <ErrorScreen title="Page not found" />,

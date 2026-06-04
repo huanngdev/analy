@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 
-import type { AppBindings } from "@/app-bindings";
+import type { AppBindings } from "@/server/app-bindings";
 
 const REQUEST_ID_HEADER = "x-request-id";
 

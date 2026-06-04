@@ -2,9 +2,9 @@ import type { ApiErrorResponse } from "@repo/shared";
 import type { ErrorHandler } from "hono";
 import { ZodError } from "zod";
 
-import type { AppBindings } from "@/app-bindings";
-import { isAppError } from "@/errors/app-error";
-import { logUnhandledError } from "@/logger";
+import type { AppBindings } from "@/server/app-bindings";
+import { isAppError } from "@/lib/errors/app-error";
+import { logUnhandledError } from "@/lib/logger";
 
 export const errorHandler: ErrorHandler<AppBindings> = (error, c) => {
   const requestId = c.get("requestId") ?? crypto.randomUUID();

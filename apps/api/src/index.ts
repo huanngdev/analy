@@ -1,8 +1,8 @@
-import app from "@/app";
-import { assertDatabaseConnection } from "@/db";
-import { env } from "@/env";
-import { logApiStartup } from "@/logger";
-import { assertRedisConnection } from "@/redis";
+import app from "@/server/app";
+import { assertDatabaseConnection } from "@/lib/db";
+import { env } from "@/config/env";
+import { logApiStartup } from "@/lib/logger";
+import { assertRedisConnection } from "@/lib/redis";
 
 await assertDatabaseConnection();
 await assertRedisConnection();

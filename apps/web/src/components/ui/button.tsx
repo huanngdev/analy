@@ -10,20 +10,23 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  hoverMotion = true,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    hoverMotion?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : "button";
 
   return (
     <Comp
+      {...props}
       data-slot="button"
       data-variant={variant}
       data-size={size}
+      data-hover-motion={hoverMotion ? "true" : "false"}
       className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
     />
   );
 }

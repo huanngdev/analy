@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
-import { getMe } from "@/axios/auth";
+import { getMe } from "@/features/auth/api/auth-api";
 import { LoadingScreen } from "@/components/screens/loading-screen";
 import { useAuthStore } from "@/stores/auth-store";
 

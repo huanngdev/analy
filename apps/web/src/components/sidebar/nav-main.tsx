@@ -1,8 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import { InboxIcon, PlusCircleIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,6 +8,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { activeSidebarMenuButtonClassName } from "@/components/sidebar/sidebar-nav-styles";
+
+// Future quick-create affordance.
+// import { InboxIcon, PlusCircleIcon } from "lucide-react";
+// import { Button } from "@/components/ui/button";
 
 type NavMainItem = {
   href: string;
@@ -27,6 +30,7 @@ export function NavMain({ items }: NavMainProps) {
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
+        {/*
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
@@ -46,11 +50,13 @@ export function NavMain({ items }: NavMainProps) {
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>
+        */}
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
+                className={activeSidebarMenuButtonClassName}
                 isActive={isActivePath(pathname, item.href)}
                 tooltip={item.title}
               >

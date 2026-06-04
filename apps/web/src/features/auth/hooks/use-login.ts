@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { getMe, login } from "@/axios/auth";
-import { getApiErrorMessage } from "@/axios";
+import { getMe, login } from "@/features/auth/api/auth-api";
+import { getApiErrorMessage } from "@/lib/api-client";
 import { useAuthStore } from "@/stores/auth-store";
 
 export function useLogin() {
