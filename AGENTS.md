@@ -17,18 +17,17 @@ These instructions apply to Codex, opencode, and any other agent that reads this
 
 ## Product
 
-Analy is a unified database cloud for developers.
+Analy is a unified analytics platform for developers.
 
-Each user owns projects and the infrastructure services attached to those projects. Users can provision, manage, monitor, and access databases, caches, analytics engines, storage services, and future infrastructure resources from one dashboard without organization or team scopes.
+Each user owns the analytics sources they create and the data those sources produce. Users can collect, manage, and understand analytics for shortened links, blogs and pages, forms, custom events, and future trackable sources from one dashboard without organization or team scopes.
 
 ## Core Concepts
 
-- User: the authenticated owner of all projects and infrastructure resources they create.
-- Project: a user-owned grouping for provisioned infrastructure.
-- Service: a managed infrastructure service inside a project, such as PostgreSQL, Redis, ClickHouse, object storage, or a message queue.
-- Credentials: connection strings, passwords, access keys, and other secrets used to access provisioned services.
-- Monitoring: CPU, memory, storage, network, and usage metrics for provisioned services.
-- Backups: scheduled snapshots, retention policies, restore points, and disaster recovery workflows for supported services.
+- User: the authenticated owner of all analytics sources and data they create.
+- Source: a user-owned trackable surface such as a shortened link, a blog/page, a form, or a custom event stream.
+- Event: a single measured occurrence attributed to a source (a click, a view, a submission, or a custom event).
+- Metric: an aggregated view over events (totals, trends, conversion rates, breakdowns by referrer/geo/device).
+- Report: a saved or shareable view over one or more sources.
 
 ## Architecture
 
@@ -62,10 +61,10 @@ Backend:
 
 Infrastructure:
 
-- PostgreSQL is the main relational database and an initial provisionable service target.
-- Redis stores refresh sessions and cache data, and is an initial provisionable service target.
-- ClickHouse is planned for analytics and event-style reporting workloads.
-- MinIO is planned for S3-compatible object storage workflows.
+- PostgreSQL is the main relational database for users, sources, and application data.
+- Redis stores refresh sessions, cache data, and rate limits.
+- ClickHouse is planned for high-volume analytics and event ingestion/reporting workloads.
+- MinIO is planned for S3-compatible object storage (for example, exported reports and assets).
 
 ## Shared Package Rules
 
@@ -78,14 +77,14 @@ Infrastructure:
 - API code should import database schemas/types from `@repo/shared`.
 - Web code should import API-facing types and validation schemas from `@repo/shared`.
 - Keep app-only implementation details inside the app that owns them.
-- Do not duplicate table definitions, request DTOs, response DTOs, service types, project ownership rules, or provisioning constants inside `apps/api` or `apps/web`.
+- Do not duplicate table definitions, request DTOs, response DTOs, source/event types, or ownership rules inside `apps/api` or `apps/web`.
 
 Recommended shared layout:
 
 - `packages/shared/src/db/schema`: Drizzle table schemas and relations.
 - `packages/shared/src/validation`: Zod validation schemas for requests, responses, forms, and environment contracts.
 - `packages/shared/src/types`: exported domain types, inferred schema types, auth/session types, and API response types.
-- `packages/shared/src/constants`: auth constants, cookie names, token TTLs, route constants, service type constants, provisioning constants, and storage constants.
+- `packages/shared/src/constants`: auth constants, cookie names, token TTLs, route constants, and source/event type constants.
 - `packages/shared/src/utils`: pure reusable helpers that are safe in both API and web runtimes.
 
 ## Authentication
@@ -98,21 +97,22 @@ Use explicit user-owned resource scoping. Do not rely only on frontend checks.
 
 - Every protected API route must authenticate the user first.
 - Every user-owned resource must store `userId` in PostgreSQL.
-- Project-owned resources must store `projectId` and remain scoped to the authenticated user.
-- Service-owned resources must also store `serviceId` when they belong under a provisioned service.
-- Every user-owned resource query must scope by `userId` and, where applicable, `projectId` and `serviceId`.
+- Source-owned resources must also store `sourceId` when they belong under a tracked source.
+- Every user-owned resource query must scope by `userId` and, where applicable, `sourceId`.
 - Never authorize by resource id alone.
 - Keep ownership checks server-side and close to the operation being protected.
 - Return `401` for unauthenticated requests and `404` or `403` for resources outside the authenticated user's ownership, depending on endpoint semantics.
 - Prefer deny-by-default ownership checks.
 - Add tests for ownership boundaries when implementing protected resources.
 
+> Note: only the authentication tables (`users`, `user_accounts`, `refresh_sessions`) exist today. The model below is the forward target for analytics resources.
+
 Recommended ownership model:
 
 - `users`: authenticated accounts that own resources.
-- `projects`: user-owned containers for provisioned infrastructure.
-- `services`: project-owned provisioned infrastructure instances.
-- `credentials`, `backups`, `metrics`, `usage_records`: user-owned resources scoped to a project and service when applicable.
+- `sources`: user-owned trackable surfaces (links, blogs/pages, forms, custom event streams).
+- `events`: append-only measured occurrences scoped to a source and the owning user.
+- `reports`, `goals`, `alerts`: user-owned resources scoped to a source when applicable.
 - `resource ownership`: every protected resource stores enough ownership columns to scope queries by authenticated user.
 
 ## Backend Code Rules
@@ -131,10 +131,10 @@ Recommended ownership model:
 - Use Drizzle schemas from `@repo/shared` for all PostgreSQL operations.
 - Keep Hono `Context` usage in route/request helper modules. Services should accept explicit inputs like `userId`, params, and validated payloads.
 - Keep OpenAPI route metadata beside route definitions, but share common OpenAPI helpers instead of duplicating response/body builders.
-- Keep PostgreSQL as the source of truth for application data.
-- Use ClickHouse only for analytics/event workloads that benefit from columnar storage.
+- Keep PostgreSQL as the source of truth for application data (users, sources, and their configuration).
+- Use ClickHouse only for high-volume event/analytics workloads that benefit from columnar storage.
 - Use Redis only for cache, rate limits, and refresh sessions.
-- Use MinIO for future object storage, but store object metadata and user/project ownership in PostgreSQL.
+- Use MinIO for future object storage, but store object metadata and user ownership in PostgreSQL.
 
 Recommended API layout:
 
@@ -197,11 +197,11 @@ Recommended web layout:
 
 ## Development Notes
 
-- Keep user, project, and service ownership boundaries explicit in backend code.
+- Keep user and source ownership boundaries explicit in backend code.
 - Use PostgreSQL for source-of-truth application data.
 - Use ClickHouse only for analytics, event, and usage data that benefits from columnar queries.
 - Use Redis for cacheable data, not as the source of truth.
-- Use MinIO for file/object storage; store metadata and user/project ownership in PostgreSQL.
+- Use MinIO for file/object storage; store metadata and user ownership in PostgreSQL.
 - Put Drizzle schemas, shared validation schemas, and shared types in `packages/shared`.
 - Keep API routes small and move reusable logic into focused modules.
 - Keep frontend server state in TanStack Query and local UI state in Zustand.

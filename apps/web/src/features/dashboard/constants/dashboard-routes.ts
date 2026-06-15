@@ -2,24 +2,24 @@ import type { SidebarBreadcrumbItem } from "@/components/sidebar/sidebar-page-he
 
 export const dashboardPlaceholderRoutes = [
   {
-    label: "Redis",
-    path: "services/redis",
-    fullPath: "/dashboard/services/redis",
+    label: "Links",
+    path: "links",
+    fullPath: "/dashboard/links",
   },
   {
-    label: "ClickHouse",
-    path: "services/clickhouse",
-    fullPath: "/dashboard/services/clickhouse",
+    label: "Blogs",
+    path: "blogs",
+    fullPath: "/dashboard/blogs",
   },
   {
-    label: "Object Storage",
-    path: "services/object-storage",
-    fullPath: "/dashboard/services/object-storage",
+    label: "Forms",
+    path: "forms",
+    fullPath: "/dashboard/forms",
   },
   {
-    label: "Queues",
-    path: "services/queues",
-    fullPath: "/dashboard/services/queues",
+    label: "Events",
+    path: "events",
+    fullPath: "/dashboard/events",
   },
   {
     label: "Settings",
@@ -43,22 +43,6 @@ export function getDashboardBreadcrumbs(
 ): SidebarBreadcrumbItem[] {
   if (pathname === "/dashboard" || pathname === "/dashboard/") {
     return [{ label: "Dashboard" }];
-  }
-
-  if (pathname === "/dashboard/services/postgresql/new") {
-    return [
-      { label: "Dashboard", to: "/dashboard" },
-      { label: "PostgreSQL", to: "/dashboard/services/postgresql" },
-      { label: "Create" },
-    ];
-  }
-
-  if (pathname.startsWith("/dashboard/services/postgresql/")) {
-    return [{ label: "Dashboard", to: "/dashboard" }, { label: "PostgreSQL" }];
-  }
-
-  if (pathname.startsWith("/dashboard/services/postgresql")) {
-    return [{ label: "Dashboard", to: "/dashboard" }, { label: "PostgreSQL" }];
   }
 
   const placeholderRoute = dashboardPlaceholderRoutes.find(

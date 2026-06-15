@@ -1,7 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 
 import { authRoutes } from "@/features/auth/auth-routes";
-import { postgresRoutes } from "@/features/postgres/postgres-routes";
 import { requestLogger } from "@/lib/logger";
 import { corsMiddleware } from "@/middleware/cors";
 import { errorHandler } from "@/middleware/error-handler";
@@ -24,7 +23,6 @@ app.use("*", rateLimitMiddleware);
 registerApiDocs(app);
 registerSystemRoutes(app);
 app.route("/auth", authRoutes);
-app.route("/postgres", postgresRoutes);
 
 app.onError(errorHandler);
 app.notFound(notFoundHandler);

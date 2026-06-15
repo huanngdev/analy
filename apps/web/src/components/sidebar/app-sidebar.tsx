@@ -1,15 +1,12 @@
 import type { AuthUser } from "@repo/shared";
-import {
-  SiClickhouse,
-  SiMinio,
-  SiPostgresql,
-  SiRabbitmq,
-  SiRedis,
-} from "@icons-pack/react-simple-icons";
 import type { ComponentProps } from "react";
 import {
   CircleHelpIcon,
+  ClipboardListIcon,
   LayoutDashboardIcon,
+  Link2Icon,
+  MousePointerClickIcon,
+  NewspaperIcon,
   SearchIcon,
   SettingsIcon,
 } from "lucide-react";
@@ -36,31 +33,26 @@ const sidebarData = {
       icon: LayoutDashboardIcon,
     },
   ],
-  resources: [
+  analytics: [
     {
-      name: "PostgreSQL",
-      href: "/dashboard/services/postgresql",
-      icon: SiPostgresql,
+      name: "Links",
+      href: "/dashboard/links",
+      icon: Link2Icon,
     },
     {
-      name: "Redis",
-      href: "/dashboard/services/redis",
-      icon: SiRedis,
+      name: "Blogs",
+      href: "/dashboard/blogs",
+      icon: NewspaperIcon,
     },
     {
-      name: "ClickHouse",
-      href: "/dashboard/services/clickhouse",
-      icon: SiClickhouse,
+      name: "Forms",
+      href: "/dashboard/forms",
+      icon: ClipboardListIcon,
     },
     {
-      name: "Object Storage",
-      href: "/dashboard/services/object-storage",
-      icon: SiMinio,
-    },
-    {
-      name: "Queues",
-      href: "/dashboard/services/queues",
-      icon: SiRabbitmq,
+      name: "Events",
+      href: "/dashboard/events",
+      icon: MousePointerClickIcon,
     },
   ],
   navSecondary: [
@@ -105,7 +97,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={sidebarData.navMain} />
-        <NavDocuments items={sidebarData.resources} />
+        <NavDocuments items={sidebarData.analytics} />
         <NavSecondary items={sidebarData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

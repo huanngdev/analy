@@ -1,28 +1,27 @@
 # Analy
 
-Analy is an open-source unified database cloud built as a modern TypeScript monorepo. It is designed for developers who need one product surface to provision, manage, monitor, and access backend infrastructure without learning complex DevOps tooling.
+Analy is an open-source unified analytics platform built as a modern TypeScript monorepo. It is designed for developers who want one product surface to collect, manage, and understand analytics for anything they ship — without wiring up a separate tool for every channel.
 
 This repository is also maintained as a portfolio project for my CV. It demonstrates full-stack product engineering with a typed API, shared validation contracts, authentication, local infrastructure, and a scalable monorepo architecture.
 
 ## What Analy Does
 
-Analy provides the foundation for a developer infrastructure platform:
+Analy provides the foundation for a developer analytics platform:
 
 - Create user accounts and sign in with email/password, GitHub, or Google.
 - Manage authenticated sessions with secure cookies, short-lived access tokens, and refresh token rotation.
-- Organize infrastructure into projects owned by the authenticated user.
-- Provision and manage PostgreSQL and Redis services from one dashboard.
-- Prepare for ClickHouse, object storage, message queues, monitoring, backups, and usage-based billing.
-- Share database schemas, API validation, constants, and types across the frontend and backend.
+- Bring your trackable sources into one dashboard: shortened links, blogs and pages, forms, and custom events.
+- Measure clicks, views, submissions, and event streams from a single control panel.
+- Share validation contracts, constants, and types across the frontend and backend.
 - Run a local development stack with PostgreSQL, Redis, ClickHouse, and MinIO.
 
 ## Product Vision
 
-Analy aims to become the simplest way for developers, indie hackers, startups, small teams, freelancers, and students to get production-ready backend infrastructure from one place.
+Analy aims to become the simplest way for developers, indie hackers, startups, small teams, freelancers, and students to understand what their audience actually does — across every surface they own.
 
-Developers should not need separate accounts, billing systems, dashboards, APIs, and deployment workflows for each database or infrastructure service. Analy should provide a consistent control panel for databases, caches, analytics engines, storage, queues, usage metrics, backups, and credentials.
+Developers should not need separate accounts, dashboards, and SDKs for link analytics, blog/page analytics, form conversions, and product events. Analy should provide a consistent control panel where any source — a shortened link, a blog post, a form, or a custom event stream — can be tracked and analyzed the same way.
 
-The product goal is to hide infrastructure complexity so users can focus on building products.
+The product goal is to hide measurement complexity so users can focus on building products and acting on the numbers.
 
 ## Current Features
 
@@ -35,20 +34,20 @@ The product goal is to hide infrastructure complexity so users can focus on buil
 - PostgreSQL schema managed with Drizzle ORM.
 - Shared Zod schemas and inferred TypeScript types in `@repo/shared`.
 - Centralized validation for API and web environment variables.
+- Dashboard shell with sidebar sections for Links, Blogs, Forms, and Events (UI placeholders, ready to build on).
 - Docker Compose infrastructure for local development services.
 - Turbo-powered workspace scripts for development, builds, linting, and typechecking.
 
 ## Planned Product Features
 
-- Instant provisioning for PostgreSQL and Redis.
-- Project management for grouping databases, caches, analytics services, storage, and queues.
-- Unified credentials for connection strings, password rotation, access key regeneration, and revocation.
-- Resource monitoring for CPU, memory, storage, and network activity.
-- Automated backups with scheduled backups, retention policies, one-click restore, and disaster recovery support.
-- Usage transparency for consumed resources, plan limits, and predictable pricing.
-- Future ClickHouse support for analytics and event tracking.
-- Future object storage support for images, videos, documents, and application assets.
-- Future message queues for background jobs, scheduled work, and event-driven systems.
+- Link shortener with click analytics (clicks, referrers, geo, devices).
+- Blog and page view analytics with traffic sources and trends.
+- Form submission tracking and conversion analytics.
+- A flexible "track anything" custom event pipeline.
+- Unified dashboards that compare performance across every source.
+- Shareable reports and exportable data.
+- Real-time event streaming for high-volume sources.
+- Alerts and goals driven by the metrics that matter.
 
 ## Tech Stack
 
@@ -79,7 +78,7 @@ The product goal is to hide infrastructure complexity so users can focus on buil
 
 - PostgreSQL for application data
 - Redis for refresh sessions, caching, and rate limits
-- ClickHouse for analytics/event workloads
+- ClickHouse for high-volume analytics/event workloads
 - MinIO for S3-compatible object storage
 - Docker Compose for local services
 
@@ -90,7 +89,7 @@ apps/
   api/        Hono API, auth flows, middleware, OpenAPI docs
   web/        Vite React client and dashboard UI
 packages/
-  shared/     Drizzle schemas, Zod schemas, constants, shared types
+  shared/     Zod schemas, Drizzle schemas, constants, shared types
   ts-config/  Shared TypeScript configuration
   eslint-config/ Shared ESLint configuration
 ```
@@ -191,19 +190,18 @@ By default:
 
 Analy keeps cross-app contracts in `packages/shared` so the frontend and backend use the same source of truth for database models, request validation, response validation, constants, and TypeScript types.
 
-The backend keeps authentication and user ownership checks close to the operation being protected, while the frontend keeps API access, auth state, and UI composition separated. This keeps the codebase ready for projects, provisioned services, credentials, monitoring, backups, usage reporting, and billing features as the product grows.
+The backend keeps authentication and user ownership checks close to the operation being protected, while the frontend keeps API access, auth state, and UI composition separated. This keeps the codebase ready for the analytics sources, ingestion endpoints, dashboards, reports, and alerting features as the product grows.
 
 ## Roadmap
 
-- Project management
-- PostgreSQL provisioning and connection management
-- Redis provisioning and connection management
-- Unified credentials and secret rotation
-- Resource monitoring and usage dashboards
-- Automated backups and restores
-- ClickHouse analytics service support
-- Object storage service support
-- Message queue service support
+- Link shortener with click analytics
+- Blog and page view analytics
+- Form submission and conversion analytics
+- Custom event ingestion and exploration
+- Unified cross-source dashboards
+- Shareable reports and data export
+- Real-time event streaming
+- Alerts, goals, and usage dashboards
 - Ownership boundary tests and production deployment guides
 
 ## License

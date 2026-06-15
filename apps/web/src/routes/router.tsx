@@ -15,9 +15,6 @@ import {
   DesignSystemRedirectPage,
 } from "@/features/design-system/pages/design-system-page";
 import { HomePage } from "@/features/home/pages/home-page";
-import { PostgresCreatePage } from "@/features/postgres/pages/postgres-create-page";
-import { PostgresDetailPage } from "@/features/postgres/pages/postgres-detail-page";
-import { PostgresListPage } from "@/features/postgres/pages/postgres-list-page";
 
 const router = createBrowserRouter([
   {
@@ -58,18 +55,6 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardIndexPage />,
-      },
-      {
-        element: <PostgresListPage />,
-        path: "services/postgresql",
-      },
-      {
-        element: <PostgresCreatePage />,
-        path: "services/postgresql/new",
-      },
-      {
-        element: <PostgresDetailPage />,
-        path: "services/postgresql/:serviceId",
       },
       ...dashboardPlaceholderRoutes.map((route) => ({
         element: <DashboardPlaceholderPage title={route.label} />,
