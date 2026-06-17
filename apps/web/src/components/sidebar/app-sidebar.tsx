@@ -1,16 +1,14 @@
 import type { AuthUser } from "@repo/shared";
 import type { ComponentProps } from "react";
-import {
-  CircleHelpIcon,
-  ClipboardListIcon,
-  LayoutDashboardIcon,
-  Link2Icon,
-  MousePointerClickIcon,
-  NewspaperIcon,
-  SearchIcon,
-  SettingsIcon,
-} from "lucide-react";
 
+import { BookTextIcon } from "@/components/icons/book-text";
+import { CircleHelpIcon } from "@/components/icons/circle-help";
+import { ClipboardCheckIcon } from "@/components/icons/clipboard-check";
+import { CursorClickIcon } from "@/components/icons/cursor-click";
+import { LayoutGridIcon } from "@/components/icons/layout-grid";
+import { LinkIcon } from "@/components/icons/link";
+import { SearchIcon } from "@/components/icons/search";
+import { SettingsIcon } from "@/components/icons/settings";
 import { AppSidebarBrand } from "@/components/sidebar/app-sidebar-brand";
 import { NavDocuments } from "@/components/sidebar/nav-documents";
 import { NavMain } from "@/components/sidebar/nav-main";
@@ -30,29 +28,29 @@ const sidebarData = {
     {
       title: "Dashboard",
       href: "/dashboard",
-      icon: LayoutDashboardIcon,
+      icon: LayoutGridIcon,
     },
   ],
   analytics: [
     {
       name: "Links",
       href: "/dashboard/links",
-      icon: Link2Icon,
+      icon: LinkIcon,
     },
     {
       name: "Blogs",
       href: "/dashboard/blogs",
-      icon: NewspaperIcon,
+      icon: BookTextIcon,
     },
     {
       name: "Forms",
       href: "/dashboard/forms",
-      icon: ClipboardListIcon,
+      icon: ClipboardCheckIcon,
     },
     {
       name: "Events",
       href: "/dashboard/events",
-      icon: MousePointerClickIcon,
+      icon: CursorClickIcon,
     },
   ],
   navSecondary: [

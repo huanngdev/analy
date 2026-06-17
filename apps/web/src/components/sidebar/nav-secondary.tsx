@@ -1,19 +1,16 @@
 import type { ComponentPropsWithoutRef } from "react";
-import type { LucideIcon } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
 
+import type { AnimatedIcon } from "@/components/icons/animated-icon";
+import { SidebarNavItem } from "@/components/sidebar/sidebar-nav-item";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { activeSidebarMenuButtonClassName } from "@/components/sidebar/sidebar-nav-styles";
 
 type NavSecondaryItem = {
   href: string;
-  icon: LucideIcon;
+  icon: AnimatedIcon;
   title: string;
 };
 
@@ -22,37 +19,20 @@ type NavSecondaryProps = {
 } & ComponentPropsWithoutRef<typeof SidebarGroup>;
 
 export function NavSecondary({ items, ...props }: NavSecondaryProps) {
-  const { pathname } = useLocation();
-
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                className={activeSidebarMenuButtonClassName}
-                isActive={isActivePath(pathname, item.href)}
-              >
-                <Link
-                  to={item.href}
-                  aria-current={
-                    isActivePath(pathname, item.href) ? "page" : undefined
-                  }
-                >
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <SidebarNavItem
+              key={item.title}
+              href={item.href}
+              icon={item.icon}
+              label={item.title}
+            />
           ))}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
   );
-}
-
-function isActivePath(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
 }

@@ -17,7 +17,7 @@ export function DashboardTitle({
 }: DashboardTitleProps) {
   return (
     <section className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-4 px-4 lg:flex-row lg:items-end lg:justify-between lg:px-6">
         <div className="flex max-w-3xl items-center gap-3">
           <div>
             <PageTitle as="h2" size="compact">
@@ -32,8 +32,8 @@ export function DashboardTitle({
         </div>
         {actions ? <div>{actions}</div> : null}
       </div>
-      <Separator className="w-[calc(100%+2rem)] -translate-x-4 lg:w-[calc(100%+3rem)] lg:-translate-x-6" />
-      {children}
+      <Separator />
+      {children ? <div className="px-4 lg:px-6">{children}</div> : null}
     </section>
   );
 }
