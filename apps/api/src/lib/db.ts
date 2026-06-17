@@ -29,6 +29,16 @@ export async function assertDatabaseConnection() {
   }
 }
 
+export async function checkDatabaseConnection(): Promise<boolean> {
+  try {
+    await client`select 1`;
+    return true;
+  } catch (error) {
+    logDatabaseError(error);
+    return false;
+  }
+}
+
 export async function closeDatabaseConnection() {
   await client.end({ timeout: 5 });
 }

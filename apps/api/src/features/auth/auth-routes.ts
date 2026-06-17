@@ -38,11 +38,18 @@ import {
 } from "@/features/auth/request-context";
 import { revokeRefreshSession } from "@/features/auth/refresh-session-service";
 import { env } from "@/config/env";
-import { AppError } from "@/lib/errors/app-error";
+import { AppError, isAppError } from "@/lib/errors/app-error";
+import { logUnhandledError } from "@/lib/logger";
 import { requireAuthMiddleware } from "@/middleware/require-auth";
-import { jsonContent, jsonRequestBody } from "@/server/openapi-helpers";
+import {
+  jsonContent,
+  jsonRequestBody,
+  openApiDefaultHook,
+} from "@/server/openapi-helpers";
 
-export const authRoutes = new OpenAPIHono<AppBindings>();
+export const authRoutes = new OpenAPIHono<AppBindings>({
+  defaultHook: openApiDefaultHook,
+});
 
 const authMeOpenApiResponseSchema = authMeResponseSchema.extend({
   memberships: z.array(z.object({}).passthrough()),
@@ -208,26 +215,41 @@ async function handleOAuthCallback(
   c: Context<AppBindings>,
   provider: OAuthProvider,
 ) {
-  const { code, state } = getOAuthCallbackInput(c);
-  const expectedState = getOAuthStateCookie(c, provider);
-  const codeVerifier = getOAuthCodeVerifierCookie(c, provider);
+  // OAuth callbacks are top-level browser navigations, so failures must land
+  // the user back on the login page with a friendly message rather than
+  // returning a raw JSON error body from the global error handler.
+  try {
+    const { code, state } = getOAuthCallbackInput(c);
+    const expectedState = getOAuthStateCookie(c, provider);
+    const codeVerifier = getOAuthCodeVerifierCookie(c, provider);
 
-  clearOAuthCookies(c, provider);
+    clearOAuthCookies(c, provider);
 
-  if (!expectedState || state !== expectedState) {
-    throw new AppError({
-      code: "UNAUTHORIZED",
-      message: "OAuth callback is invalid",
-      status: 401,
-    });
+    if (!expectedState || state !== expectedState) {
+      throw new AppError({
+        code: "UNAUTHORIZED",
+        message: "OAuth callback is invalid",
+        status: 401,
+      });
+    }
+
+    const profile = await getOAuthUserProfile(provider, code, codeVerifier);
+    const result = await loginWithOAuth(profile, getAuthRequestContext(c));
+
+    setAuthCookies(c, result.accessToken, result.refreshToken);
+
+    return c.redirect(`${env.WEB_APP_URL}/dashboard`, 302);
+  } catch (error) {
+    clearOAuthCookies(c, provider);
+
+    // Unexpected (non-AppError) failures are worth logging; expected user
+    // errors (cancelled consent, invalid state, unverified email) are not.
+    if (!isAppError(error)) {
+      logUnhandledError(error, c.get("requestId") ?? "oauth-callback");
+    }
+
+    return c.redirect(`${env.WEB_APP_URL}/login?error=oauth`, 302);
   }
-
-  const profile = await getOAuthUserProfile(provider, code, codeVerifier);
-  const result = await loginWithOAuth(profile, getAuthRequestContext(c));
-
-  setAuthCookies(c, result.accessToken, result.refreshToken);
-
-  return c.redirect(`${env.WEB_APP_URL}/dashboard`, 302);
 }
 
 authRoutes.openapi(registerRoute, async (c) => {

@@ -10,9 +10,10 @@ import { requestIdMiddleware } from "@/middleware/request-id";
 import { securityMiddleware } from "@/middleware/security";
 import type { AppBindings } from "@/server/app-bindings";
 import { registerApiDocs } from "@/server/open-api";
+import { openApiDefaultHook } from "@/server/openapi-helpers";
 import { registerSystemRoutes } from "@/server/system-routes";
 
-const app = new OpenAPIHono<AppBindings>();
+const app = new OpenAPIHono<AppBindings>({ defaultHook: openApiDefaultHook });
 
 app.use("*", securityMiddleware);
 app.use("*", corsMiddleware);

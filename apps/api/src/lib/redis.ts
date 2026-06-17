@@ -45,6 +45,17 @@ export async function assertRedisConnection() {
   logRedisReady();
 }
 
+export async function checkRedisConnection(): Promise<boolean> {
+  try {
+    const client = await getRedisClient();
+    await client.ping();
+    return true;
+  } catch (error) {
+    logRedisError(error);
+    return false;
+  }
+}
+
 export async function closeRedisConnection() {
   if (redisClient.isOpen) {
     await redisClient.quit();

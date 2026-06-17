@@ -7,6 +7,7 @@
     "dev:host": "vite --host 0.0.0.0 --port 3000",
     "build": "bun run typecheck && vite build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test",
     "lint": "eslint .",
     "clean": "rm -rf dist .turbo node_modules/.tmp",
     "preview": "vite preview"

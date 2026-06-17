@@ -16,6 +16,8 @@
     "dev:studio": "drizzle-kit studio --config apps/api/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config apps/api/drizzle.config.ts",
     "build": "bunx turbo build",
+    "test": "bun test",
+    "test:turbo": "bunx turbo run test",
     "typecheck": "bunx turbo typecheck",
     "lint": "bunx turbo lint",
     "lint:staged": "lint-staged",

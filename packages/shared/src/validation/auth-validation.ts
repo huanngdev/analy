@@ -14,7 +14,7 @@ export const authUserSchema = z.object({
 export const authRegisterRequestSchema = z
   .object({
     confirmPassword: z.string().min(8).max(128),
-    email: z.email().trim().toLowerCase(),
+    email: z.string().trim().toLowerCase().pipe(z.email()),
     password: z.string().min(8).max(128),
   })
   .refine((input) => input.password === input.confirmPassword, {
@@ -23,7 +23,7 @@ export const authRegisterRequestSchema = z
   });
 
 export const authLoginRequestSchema = z.object({
-  email: z.email().trim().toLowerCase(),
+  email: z.string().trim().toLowerCase().pipe(z.email()),
   password: z.string().min(1).max(128),
 });
 

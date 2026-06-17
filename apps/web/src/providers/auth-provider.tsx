@@ -21,7 +21,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { clearAuth, setAuth } = useAuthStore.getState();
 
       try {
-        setAuth(await getMe({ redirectOnAuthFailure: false }));
+        // On a cold load there may be no session at all; skip the token-refresh
+        // retry so an anonymous visitor does not trigger a doomed rotate-token
+        // request (and the matching server log noise) on every first visit.
+        setAuth(
+          await getMe({ redirectOnAuthFailure: false, skipAuthRetry: true }),
+        );
       } catch {
         clearAuth();
       } finally {

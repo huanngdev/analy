@@ -19,6 +19,9 @@
       "interruptible": true,
       "persistent": true
     },
+    "test": {
+      "dependsOn": ["^build"]
+    },
     "lint": {},
     "clean": {
       "cache": false

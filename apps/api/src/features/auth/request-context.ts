@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 
+import { getClientIpFromHeaders } from "@/lib/client-ip";
 import { AppError } from "@/lib/errors/app-error";
 
 export type AuthRequestContext = {
@@ -21,10 +22,10 @@ export async function parseJsonBody(c: Context): Promise<unknown> {
 }
 
 export function getAuthRequestContext(c: Context): AuthRequestContext {
+  const headers = c.req.raw.headers;
+
   return {
-    ipAddress:
-      c.req.header("cf-connecting-ip") ??
-      c.req.header("x-forwarded-for")?.split(",")[0]?.trim(),
-    userAgent: c.req.header("user-agent"),
+    ipAddress: getClientIpFromHeaders(headers),
+    userAgent: headers.get("user-agent") ?? undefined,
   };
 }

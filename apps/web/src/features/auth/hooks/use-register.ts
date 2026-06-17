@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authRegisterRequestSchema } from "@repo/shared";
-import type { AuthRegisterRequest } from "@repo/shared";
+import type { AuthMeResponse, AuthRegisterRequest } from "@repo/shared";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { getMe, register } from "@/features/auth/api/auth-api";
+import { register } from "@/features/auth/api/auth-api";
 import { getApiErrorMessage } from "@/lib/api-client";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -24,8 +24,16 @@ export function useRegister() {
 
   const mutation = useMutation({
     mutationFn: async (input: AuthRegisterRequest) => {
-      await register(input);
-      return getMe();
+      // The register response already carries the authenticated user, so there
+      // is no need for a second `/auth/me` round trip.
+      const session = await register(input);
+
+      return {
+        ...session,
+        memberships: [],
+        organizations: [],
+        permissions: [],
+      } satisfies AuthMeResponse;
     },
     onError: (error) => {
       toast.error("Unable to create account", {
@@ -35,7 +43,7 @@ export function useRegister() {
     onSuccess: (auth) => {
       setAuth(auth);
       toast.success("Account created", {
-        description: "Your infrastructure dashboard is ready.",
+        description: "Your analytics dashboard is ready.",
       });
       void navigate("/dashboard", { replace: true });
     },

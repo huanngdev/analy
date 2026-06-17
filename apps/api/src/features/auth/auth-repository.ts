@@ -90,6 +90,11 @@ export async function createEmailPasswordUser(
 }
 
 export async function findOrCreateOAuthUser(input: OAuthUserInput) {
+  // Normalize the provider email so OAuth users match the lowercased emails
+  // stored by the email/password flow. Without this, `foo@x.com` and a provider
+  // returning `Foo@X.com` would create two separate accounts.
+  const normalizedEmail = input.email.trim().toLowerCase();
+
   const user = await db.transaction(async (tx) => {
     const [linkedAccount] = await tx
       .select({ user: users })
@@ -110,7 +115,7 @@ export async function findOrCreateOAuthUser(input: OAuthUserInput) {
     const accountValues = (userId: string): NewUserAccount => ({
       provider: input.provider,
       providerAccountId: input.providerAccountId,
-      providerEmail: input.email,
+      providerEmail: normalizedEmail,
       providerEmailVerified: input.emailVerified,
       userId,
     });
@@ -118,7 +123,7 @@ export async function findOrCreateOAuthUser(input: OAuthUserInput) {
     const [existingUser] = await tx
       .select()
       .from(users)
-      .where(eq(users.email, input.email))
+      .where(eq(users.email, normalizedEmail))
       .limit(1);
 
     if (existingUser) {
@@ -134,9 +139,9 @@ export async function findOrCreateOAuthUser(input: OAuthUserInput) {
 
     const userValues: NewUser = {
       avatarUrl: input.avatarUrl ?? null,
-      email: input.email,
+      email: normalizedEmail,
       emailVerified: input.emailVerified,
-      name: input.name?.trim() || generateNameFromEmail(input.email),
+      name: input.name?.trim() || generateNameFromEmail(normalizedEmail),
     };
 
     const [createdUser] = await tx.insert(users).values(userValues).returning();

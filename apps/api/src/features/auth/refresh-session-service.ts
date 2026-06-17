@@ -113,6 +113,19 @@ async function readRedisSession(sessionId: string) {
   }
 }
 
+function unauthorized() {
+  return new AppError({
+    code: "UNAUTHORIZED",
+    message: "Authentication required",
+    status: 401,
+  });
+}
+
+async function deleteRedisSession(sessionId: string) {
+  const client = await getRedisClient();
+  await client.del(redisSessionKey(sessionId));
+}
+
 export async function createRefreshSession(
   userId: string,
   context: AuthRequestContext,
@@ -156,29 +169,19 @@ export async function rotateRefreshSession(refreshCookie: string | undefined) {
   const parsedCookie = parseCookieValue(refreshCookie);
 
   if (!parsedCookie) {
-    throw new AppError({
-      code: "UNAUTHORIZED",
-      message: "Authentication required",
-      status: 401,
-    });
+    throw unauthorized();
   }
 
   const session = await readRedisSession(parsedCookie.sessionId);
 
   if (!session) {
-    throw new AppError({
-      code: "UNAUTHORIZED",
-      message: "Authentication required",
-      status: 401,
-    });
+    throw unauthorized();
   }
 
   if (Date.parse(session.expiresAt) <= Date.now()) {
-    throw new AppError({
-      code: "UNAUTHORIZED",
-      message: "Authentication required",
-      status: 401,
-    });
+    await deleteRedisSession(session.sessionId);
+    await revokeRefreshSessionAudit(session.sessionId);
+    throw unauthorized();
   }
 
   const refreshTokenHash = createRefreshTokenHash(
@@ -187,17 +190,23 @@ export async function rotateRefreshSession(refreshCookie: string | undefined) {
   );
 
   if (!compareHashes(session.tokenHash, refreshTokenHash)) {
-    throw new AppError({
-      code: "UNAUTHORIZED",
-      message: "Authentication required",
-      status: 401,
-    });
+    // The presented token does not match the session's current secret. The
+    // browser only ever holds the latest token, so this means either tampering
+    // or replay of an already-rotated token (a theft signal). Revoke the whole
+    // session so a leaked token cannot be reused against a live session.
+    await deleteRedisSession(session.sessionId);
+    await revokeRefreshSessionAudit(session.sessionId);
+    throw unauthorized();
   }
 
+  // Sliding expiration: each rotation extends the session window so active
+  // users stay signed in, rather than being cut off at a fixed point from
+  // first login.
   const nextRefreshToken = createRefreshToken();
-  const expiresAt = new Date(session.expiresAt);
+  const expiresAt = createExpiresAt();
   const rotatedSession: RefreshSession = {
     ...session,
+    expiresAt: expiresAt.toISOString(),
     lastRotatedAt: new Date().toISOString(),
     tokenHash: createRefreshTokenHash(session.sessionId, nextRefreshToken),
   };
@@ -207,7 +216,7 @@ export async function rotateRefreshSession(refreshCookie: string | undefined) {
 
   return {
     refreshToken: createCookieValue(session.sessionId, nextRefreshToken),
-    refreshTokenMaxAge: getRemainingSeconds(session.expiresAt),
+    refreshTokenMaxAge: getRemainingSeconds(rotatedSession.expiresAt),
     userId: session.userId,
   };
 }
@@ -219,7 +228,6 @@ export async function revokeRefreshSession(refreshCookie: string | undefined) {
     return;
   }
 
-  const client = await getRedisClient();
-  await client.del(redisSessionKey(parsedCookie.sessionId));
+  await deleteRedisSession(parsedCookie.sessionId);
   await revokeRefreshSessionAudit(parsedCookie.sessionId);
 }

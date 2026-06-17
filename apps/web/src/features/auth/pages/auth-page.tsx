@@ -1,4 +1,11 @@
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import { toast } from "sonner";
 
 import { Logo } from "@/components/logo";
 import { DotPattern } from "@/components/patterns/dot-pattern";
@@ -21,11 +28,28 @@ export function AuthPage() {
   const auth = useAuthStore((state) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = location.pathname === "/login" ? "login" : "register";
+  const oauthError = searchParams.get("error");
 
   useDocumentTitle(
     activeTab === "login" ? "Login | Analy" : "Register | Analy",
   );
+
+  useEffect(() => {
+    if (oauthError !== "oauth") {
+      return;
+    }
+
+    toast.error("Sign in failed", {
+      description:
+        "We couldn't sign you in with that provider. Please try again.",
+    });
+
+    const next = new URLSearchParams(searchParams);
+    next.delete("error");
+    setSearchParams(next, { replace: true });
+  }, [oauthError, searchParams, setSearchParams]);
 
   if (auth?.user) {
     return <Navigate to="/dashboard" replace />;
@@ -56,8 +80,8 @@ export function AuthPage() {
                     <PageTitle size="compact">Create your account</PageTitle>
                   </CardTitle>
                   <CardDescription>
-                    Start provisioning databases and backend services from one
-                    dashboard.
+                    Bring your links, pages, forms, and events into one
+                    analytics dashboard.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -70,8 +94,8 @@ export function AuthPage() {
                     <PageTitle size="compact">Welcome back</PageTitle>
                   </CardTitle>
                   <CardDescription>
-                    Sign in to manage your projects, services, credentials, and
-                    infrastructure usage.
+                    Sign in to track your links, pages, forms, and events from
+                    one dashboard.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
